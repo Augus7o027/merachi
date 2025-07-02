@@ -1,2815 +1,1081 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard MERACHI - Confia no Processo</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --primary-purple: #663399;
-            --primary-purple-light: #7B4BB8;
-            --accent-yellow: #FFD700;
-            --card-bg: rgba(255, 255, 255, 0.98);
-            --text-primary: #2D1B3D;
-            --text-secondary: #6B5B73;
-            --text-light: #9B8AA3;
-            --border-radius: 12px;
-            --shadow: 0 4px 16px rgba(102, 51, 153, 0.12);
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, var(--primary-purple) 0%, #4A2570 100%);
-            min-height: 100vh;
-            color: var(--text-primary);
-        }
-
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 24px;
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 32px;
-            color: white;
-        }
-
-        .header h1 {
-            font-size: 2.5rem;
-            margin-bottom: 12px;
-            font-weight: 700;
-        }
-
-        .header p {
-            font-size: 1.1rem;
-            opacity: 0.9;
-            margin-bottom: 20px;
-        }
-
-        .badges {
-            display: flex;
-            justify-content: center;
-            gap: 16px;
-            flex-wrap: wrap;
-        }
-
-        .badge {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            background: rgba(255, 255, 255, 0.15);
-            padding: 10px 16px;
-            border-radius: var(--border-radius);
-            font-size: 0.9rem;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .badge.connected {
-            background: rgba(255, 215, 0, 0.2);
-            border-color: rgba(255, 215, 0, 0.4);
-        }
-
-        /* Menu suspenso - Z-INDEX MÁXIMO */
-        .nav-menu {
-            background: var(--card-bg);
-            border-radius: var(--border-radius);
-            padding: 0;
-            margin-bottom: 24px;
-            box-shadow: var(--shadow);
-            position: relative;
-            display: inline-block;
-            min-width: 250px;
-            z-index: 9999; /* Z-index máximo */
-        }
-
-        .nav-dropdown {
-            position: relative;
-            width: 100%;
-            z-index: 9999;
-        }
-
-        .nav-current {
-            padding: 12px 20px;
-            background: var(--primary-purple);
-            color: white;
-            border: none;
-            border-radius: var(--border-radius);
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 1rem;
-            width: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .nav-current::after {
-            content: '▼';
-            font-size: 0.8rem;
-            transition: transform 0.2s ease;
-        }
-
-        .nav-current.open::after {
-            transform: rotate(180deg);
-        }
-
-        .nav-options {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            right: 0;
-            background: var(--card-bg);
-            border-radius: var(--border-radius);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
-            z-index: 9999; /* Z-index máximo */
-            opacity: 0;
-            visibility: hidden;
-            transform: translateY(-10px);
-            transition: all 0.2s ease;
-            margin-top: 4px;
-            border: 1px solid rgba(0, 0, 0, 0.15);
-        }
-
-        .nav-options.open {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
-        }
-
-        .nav-option {
-            padding: 12px 20px;
-            border: none;
-            background: transparent;
-            color: var(--text-secondary);
-            cursor: pointer;
-            font-weight: 500;
-            width: 100%;
-            text-align: left;
-            transition: all 0.2s ease;
-            border-radius: 0;
-        }
-
-        .nav-option:first-child {
-            border-radius: var(--border-radius) var(--border-radius) 0 0;
-        }
-
-        .nav-option:last-child {
-            border-radius: 0 0 var(--border-radius) var(--border-radius);
-        }
-
-        .nav-option:hover {
-            background: rgba(102, 51, 153, 0.1);
-            color: var(--primary-purple);
-        }
-
-        /* Filtros de período */
-        .period-filters {
-            background: var(--card-bg);
-            border-radius: var(--border-radius);
-            padding: 16px;
-            margin-bottom: 24px;
-            box-shadow: var(--shadow);
-            display: flex;
-            justify-content: center;
-            gap: 8px;
-            flex-wrap: wrap;
-            position: relative;
-            z-index: 10;
-        }
-
-        .period-btn {
-            padding: 8px 16px;
-            border: 2px solid rgba(102, 51, 153, 0.2);
-            background: transparent;
-            color: var(--text-secondary);
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: all 0.2s ease;
-        }
-
-        .period-btn:hover {
-            border-color: var(--primary-purple);
-            color: var(--primary-purple);
-        }
-
-        .period-btn.active {
-            background: var(--primary-purple);
-            border-color: var(--primary-purple);
-            color: white;
-        }
-
-        /* Filtro de período customizado */
-        .custom-period-dropdown {
-            position: relative;
-            display: inline-block;
-        }
-
-        .custom-period-content {
-            position: absolute;
-            top: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--card-bg);
-            border-radius: var(--border-radius);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-            padding: 16px;
-            margin-top: 8px;
-            z-index: 100;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.2s ease;
-            min-width: 280px;
-        }
-
-        .custom-period-content.open {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .date-input-group {
-            margin-bottom: 12px;
-        }
-
-        .date-input-label {
-            display: block;
-            font-weight: 600;
-            color: var(--text-primary);
-            margin-bottom: 6px;
-            font-size: 0.85rem;
-        }
-
-        .date-input {
-            width: 100%;
-            padding: 8px 12px;
-            border: 2px solid rgba(102, 51, 153, 0.2);
-            border-radius: 6px;
-            font-size: 0.9rem;
-            transition: all 0.2s ease;
-        }
-
-        .date-input:focus {
-            outline: none;
-            border-color: var(--primary-purple);
-        }
-
-        .apply-period-btn {
-            width: 100%;
-            padding: 10px;
-            background: var(--primary-purple);
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            margin-top: 8px;
-        }
-
-        .apply-period-btn:hover {
-            background: var(--primary-purple-light);
-        }
-
-        /* Métricas */
-        .metrics {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 24px;
-            margin-bottom: 32px;
-        }
-
-        .metric-card {
-            background: var(--card-bg);
-            padding: 24px;
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow);
-            text-align: center;
-        }
-
-        .metric-number {
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: var(--primary-purple);
-            margin-bottom: 8px;
-        }
-
-        .metric-label {
-            font-size: 1rem;
-            font-weight: 600;
-            color: var(--text-secondary);
-        }
-
-        /* Seção principal */
-        .main-content {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 32px;
-        }
-
-        .content-view {
-            display: none;
-        }
-
-        .content-view.active {
-            display: block;
-        }
-
-        .section {
-            background: var(--card-bg);
-            border-radius: var(--border-radius);
-            padding: 24px;
-            box-shadow: var(--shadow);
-            margin-bottom: 24px;
-        }
-
-        .section-title {
-            font-size: 1.3rem;
-            font-weight: 600;
-            margin-bottom: 20px;
-            color: var(--text-primary);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .sync-btn {
-            margin-left: auto;
-            padding: 8px 16px;
-            border: none;
-            background: var(--primary-purple);
-            color: white;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            font-weight: 500;
-        }
-
-        .sync-btn:hover {
-            background: var(--primary-purple-light);
-        }
-
-        /* Grid para visualização lado a lado */
-        .split-view {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 24px;
-        }
-
-        /* Items de eventos/tasks */
-        .item {
-            padding: 16px;
-            margin-bottom: 12px;
-            background: rgba(102, 51, 153, 0.02);
-            border-radius: 8px;
-            border-left: 4px solid var(--primary-purple);
-            cursor: pointer;
-            transition: all 0.2s ease;
-            position: relative;
-        }
-
-        .item:hover {
-            background: rgba(102, 51, 153, 0.05);
-            transform: translateX(4px);
-        }
-
-        .item-title {
-            font-weight: 600;
-            margin-bottom: 8px;
-            color: var(--text-primary);
-            line-height: 1.3;
-        }
-
-        .item-meta {
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-            align-items: center;
-        }
-
-        .status-badge {
-            display: inline-block;
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-size: 0.75rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-            user-select: none;
-        }
-
-        .status-badge:hover {
-            transform: scale(1.05);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-        }
-
-        /* Status Loading State */
-        .status-badge.loading {
-            opacity: 0.6;
-            pointer-events: none;
-        }
-
-        .status-badge.loading::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            right: 4px;
-            transform: translateY(-50%);
-            width: 8px;
-            height: 8px;
-            border: 1px solid currentColor;
-            border-top: 1px solid transparent;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: translateY(-50%) rotate(0deg); }
-            100% { transform: translateY(-50%) rotate(360deg); }
-        }
-
-        .status-confirmed { background: #c6f6d5; color: #059669; }
-        .status-tentative { background: #fefcbf; color: #d69e2e; }
-        .status-open { background: #e6f7ff; color: #1890ff; }
-        .status-progress { background: #fff2e6; color: #fa8c16; }
-        .status-complete { background: #c6f6d5; color: #059669; }
-        .status-review { background: #f0e6ff; color: #7b68ee; }
-
-        /* Botão de Reset (Borracha) */
-        .reset-btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 24px;
-            height: 24px;
-            margin-left: 4px;
-            padding: 0;
-            background: rgba(239, 68, 68, 0.1);
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.85rem;
-            transition: all 0.2s ease;
-            opacity: 0.7;
-        }
-
-        .reset-btn:hover {
-            background: rgba(239, 68, 68, 0.2);
-            opacity: 1;
-            transform: scale(1.1);
-        }
-
-        .reset-btn:active {
-            transform: scale(0.95);
-        }
-
-        /* Seções por setor */
-        .sector-section {
-            margin-bottom: 24px;
-        }
-
-        .sector-title {
-            font-size: 1rem;
-            font-weight: 600;
-            color: var(--primary-purple);
-            margin-bottom: 12px;
-            padding: 8px 12px;
-            background: rgba(102, 51, 153, 0.1);
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .sector-count {
-            background: var(--primary-purple);
-            color: white;
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-size: 0.8rem;
-        }
-
-        /* Visualização de calendário - Responsivo */
-        .calendar-view {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 6px;
-            margin-top: 16px;
-            max-width: 100%;
-            overflow: hidden;
-        }
-
-        .calendar-day {
-            aspect-ratio: 1;
-            border: 1px solid rgba(102, 51, 153, 0.1);
-            border-radius: 6px;
-            padding: 6px;
-            font-size: 0.75rem;
-            position: relative;
-            min-height: 80px;
-            max-height: 100px;
-            overflow: hidden;
-        }
-
-        .calendar-day.today {
-            background: rgba(255, 215, 0, 0.1);
-            border-color: var(--accent-yellow);
-        }
-
-        .calendar-day.other-month {
-            opacity: 0.3;
-        }
-
-        .calendar-event {
-            background: var(--primary-purple);
-            color: white;
-            padding: 2px 4px;
-            border-radius: 3px;
-            font-size: 0.65rem;
-            margin: 2px 0;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            line-height: 1.3;
-        }
-
-        .calendar-task {
-            background: var(--accent-yellow);
-            color: var(--text-primary);
-            padding: 2px 4px;
-            border-radius: 3px;
-            font-size: 0.65rem;
-            margin: 2px 0;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            line-height: 1.3;
-        }
-
-        .calendar-day-header {
-            text-align: center;
-            font-weight: 600;
-            padding: 10px;
-            background: rgba(102, 51, 153, 0.1);
-            border-radius: 6px;
-            font-size: 0.85rem;
-        }
-
-        .loading {
-            display: none;
-            text-align: center;
-            padding: 40px;
-            color: white;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(102, 51, 153, 0.9);
-            border-radius: var(--border-radius);
-            z-index: 1000;
-        }
-
-        .spinner {
-            width: 32px;
-            height: 32px;
-            border: 3px solid rgba(255, 215, 0, 0.3);
-            border-top: 3px solid var(--accent-yellow);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 16px;
-        }
-
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 12px 20px;
-            border-radius: 8px;
-            color: white;
-            font-weight: 500;
-            z-index: 1000;
-            animation: slideIn 0.3s ease;
-        }
-
-        .notification.success { background: #10B981; }
-        .notification.error { background: #EF4444; }
-        .notification.info { background: var(--primary-purple); }
-
-        @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 40px;
-            color: var(--text-light);
-        }
-
-        /* ===============================
-           🚀 QUICK ACTIONS - ESTILOS
-           =============================== */
-
-        /* Floating Action Button */
-        .fab {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            width: 60px;
-            height: 60px;
-            background: linear-gradient(135deg, var(--primary-purple), var(--primary-purple-light));
-            border: none;
-            border-radius: 50%;
-            box-shadow: 0 8px 24px rgba(102, 51, 153, 0.3);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            color: white;
-            transition: all 0.3s ease;
-            z-index: 1000;
-        }
-
-        .fab:hover {
-            transform: scale(1.1);
-            box-shadow: 0 12px 32px rgba(102, 51, 153, 0.4);
-        }
-
-        .fab.active {
-            transform: rotate(45deg);
-        }
-
-        /* Modal de Quick Actions */
-        .quick-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(5px);
-            z-index: 2000;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            animation: fadeIn 0.3s ease;
-        }
-
-        .quick-modal.active {
-            display: flex;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        .modal-content {
-            background: var(--card-bg);
-            border-radius: 16px;
-            width: 90%;
-            max-width: 500px;
-            max-height: 90vh;
-            overflow-y: auto;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            animation: slideUp 0.3s ease;
-        }
-
-        @keyframes slideUp {
-            from { transform: translateY(30px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-
-        .modal-header {
-            padding: 24px 24px 0;
-            border-bottom: 1px solid rgba(102, 51, 153, 0.1);
-            margin-bottom: 24px;
-        }
-
-        .modal-title {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--text-primary);
-            margin-bottom: 16px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .modal-close {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: none;
-            border: none;
-            font-size: 24px;
-            color: var(--text-light);
-            cursor: pointer;
-            padding: 8px;
-            border-radius: 8px;
-            transition: all 0.2s ease;
-        }
-
-        .modal-close:hover {
-            background: rgba(102, 51, 153, 0.1);
-            color: var(--primary-purple);
-        }
-
-        /* Tabs do Modal */
-        .modal-tabs {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 24px;
-        }
-
-        .tab-btn {
-            flex: 1;
-            padding: 12px 16px;
-            border: 2px solid rgba(102, 51, 153, 0.2);
-            background: transparent;
-            color: var(--text-secondary);
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .tab-btn:hover {
-            border-color: var(--primary-purple);
-            color: var(--primary-purple);
-        }
-
-        .tab-btn.active {
-            background: var(--primary-purple);
-            border-color: var(--primary-purple);
-            color: white;
-        }
-
-        /* Conteúdo das Tabs */
-        .tab-content {
-            display: none;
-            padding: 0 24px 24px;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        /* Formulários */
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-label {
-            display: block;
-            font-weight: 600;
-            color: var(--text-primary);
-            margin-bottom: 8px;
-            font-size: 0.9rem;
-        }
-
-        /* CORREÇÃO: Labels no tab de demandas em massa com COR PRETA */
-        #bulkTab .form-label {
-            color: var(--text-primary) !important;
-        }
-
-        #bulkTab small {
-            color: var(--text-secondary) !important;
-        }
-
-        .form-input, .form-select, .form-textarea {
-            width: 100%;
-            padding: 12px 16px;
-            border: 2px solid rgba(102, 51, 153, 0.2);
-            border-radius: 8px;
-            font-size: 1rem;
-            font-family: inherit;
-            transition: all 0.2s ease;
-            background: white;
-        }
-
-        .form-input:focus, .form-select:focus, .form-textarea:focus {
-            outline: none;
-            border-color: var(--primary-purple);
-            box-shadow: 0 0 0 3px rgba(102, 51, 153, 0.1);
-        }
-
-        .form-textarea {
-            resize: vertical;
-            min-height: 80px;
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-        }
-
-        /* Botões do formulário */
-        .form-actions {
-            display: flex;
-            gap: 12px;
-            margin-top: 32px;
-            padding-top: 24px;
-            border-top: 1px solid rgba(102, 51, 153, 0.1);
-        }
-
-        .btn {
-            flex: 1;
-            padding: 14px 20px;
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .btn-primary {
-            background: var(--primary-purple);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: var(--primary-purple-light);
-            transform: translateY(-2px);
-        }
-
-        .btn-secondary {
-            background: rgba(102, 51, 153, 0.1);
-            color: var(--primary-purple);
-        }
-
-        .btn-secondary:hover {
-            background: rgba(102, 51, 153, 0.2);
-        }
-
-        .btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none !important;
-        }
-
-        /* Loading nos botões */
-        .btn-loading {
-            position: relative;
-            color: transparent !important;
-        }
-
-        .btn-loading::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 20px;
-            height: 20px;
-            border: 2px solid currentColor;
-            border-top: 2px solid transparent;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        /* Filtros Avançados */
-        .advanced-filters {
-            background: var(--card-bg);
-            border-radius: var(--border-radius);
-            padding: 20px;
-            margin-bottom: 24px;
-            box-shadow: var(--shadow);
-        }
-
-        .filters-title {
-            font-weight: 600;
-            color: var(--text-primary);
-            margin-bottom: 16px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .filters-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 16px;
-            margin-bottom: 16px;
-        }
-
-        .filter-input {
-            padding: 10px 14px;
-            border: 2px solid rgba(102, 51, 153, 0.2);
-            border-radius: 8px;
-            font-size: 0.9rem;
-        }
-
-        .filter-input:focus {
-            outline: none;
-            border-color: var(--primary-purple);
-        }
-
-        .clear-filters {
-            padding: 8px 16px;
-            background: rgba(102, 51, 153, 0.1);
-            border: none;
-            border-radius: 6px;
-            color: var(--primary-purple);
-            cursor: pointer;
-            font-size: 0.9rem;
-            font-weight: 500;
-        }
-
-        .clear-filters:hover {
-            background: rgba(102, 51, 153, 0.2);
-        }
-
-        /* Responsivo */
-        @media (max-width: 768px) {
-            .split-view, .metrics {
-                grid-template-columns: 1fr;
-            }
-            .header h1 { font-size: 2rem; }
-            .container { padding: 16px; }
-            .nav-menu, .period-filters {
-                justify-content: flex-start;
-                overflow-x: auto;
-                padding-bottom: 8px;
-            }
-            .calendar-view {
-                grid-template-columns: repeat(7, 1fr);
-                gap: 3px;
-            }
-            .calendar-day {
-                min-height: 65px;
-                max-height: 75px;
-                padding: 3px;
-                font-size: 0.65rem;
-            }
-            .calendar-event, .calendar-task {
-                font-size: 0.55rem;
-                padding: 1px 3px;
-            }
-            .calendar-day-header {
-                font-size: 0.75rem;
-                padding: 6px;
-            }
-            
-            .fab {
-                bottom: 20px;
-                right: 20px;
-                width: 56px;
-                height: 56px;
-                font-size: 20px;
-            }
-            
-            .modal-content {
-                width: 95%;
-                margin: 20px;
-            }
-            
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-            
-            .filters-row {
-                grid-template-columns: 1fr;
-            }
-            
-            .form-actions {
-                flex-direction: column;
-            }
-        }
-
-        @media (min-width: 769px) and (max-width: 1024px) {
-            .calendar-day {
-                min-height: 75px;
-                max-height: 90px;
-                font-size: 0.7rem;
-            }
-            .calendar-event, .calendar-task {
-                font-size: 0.6rem;
-            }
-        }
-
-        @media (min-width: 1025px) {
-            .calendar-day {
-                min-height: 85px;
-                max-height: 105px;
-                font-size: 0.75rem;
-            }
-            .calendar-event, .calendar-task {
-                font-size: 0.65rem;
-            }
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="header">
-            <h1>🎵 Dashboard MERACHI</h1>
-            <p>Gestão de Demandas - Confia no Processo</p>
-            <div class="badges">
-                <div class="badge connected">📅 Google Calendar</div>
-                <div class="badge connected">✅ ClickUp</div>
-                <div class="badge connected">🔄 n8n</div>
-            </div>
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+
+// Componente principal da aplicação
+export default function App() {
+  // Estilos globais injetados no cabeçalho do documento
+  const GlobalStyles = () => (
+    <style>{`
+      :root {
+        --primary-purple: #7F5AF0;
+        --primary-purple-light: #9D86F5;
+        --accent-green: #2CB67D;
+        --accent-yellow: #FFD700;
+        --card-bg: rgba(26, 23, 38, 0.6);
+        --card-bg-solid: #1A1726;
+        --text-primary: #FFFFFE;
+        --text-secondary: #94A1B2;
+        --text-tertiary: #72757E;
+        --border-color: rgba(127, 90, 240, 0.2);
+        --border-radius: 16px;
+        --shadow: 0 8px 32px rgba(13, 12, 34, 0.3);
+        --backdrop-blur: 10px;
+      }
+
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+
+      html { scroll-behavior: smooth; }
+
+      body {
+        font-family: 'Inter', sans-serif;
+        background-color: #16161A;
+        background-image: 
+            radial-gradient(circle at 1px 1px, rgba(127, 90, 240, 0.2) 1px, transparent 0),
+            radial-gradient(circle at top left, #2E2359, #16161A 40%);
+        background-size: 32px 32px, 100% 100%;
+        min-height: 100vh;
+        color: var(--text-primary);
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+      
+      ::-webkit-scrollbar { width: 8px; }
+      ::-webkit-scrollbar-track { background: #1A1726; }
+      ::-webkit-scrollbar-thumb { background: var(--primary-purple); border-radius: 4px; }
+      ::-webkit-scrollbar-thumb:hover { background: var(--primary-purple-light); }
+
+      @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+      @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+      @keyframes slideUp { from { transform: translateY(50px) scale(0.95); opacity: 0; } to { transform: translateY(0) scale(1); opacity: 1; } }
+      @keyframes slideIn { from { transform: translateX(120%); } to { transform: translateX(0); } }
+      @keyframes slideOut { from { transform: translateX(0); } to { transform: translateX(120%); } }
+      
+      .btn-loading::after {
+        content: '';
+        position: absolute;
+        width: 16px;
+        height: 16px;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        margin: auto;
+        border: 2px solid transparent;
+        border-top-color: #ffffff;
+        border-radius: 50%;
+        animation: spin .5s linear infinite;
+      }
+
+      .status-badge {
+        display: inline-block; padding: 4px 12px;
+        border-radius: 20px; font-size: 0.75rem;
+        font-weight: 600; cursor: pointer;
+        transition: all 0.3s ease;
+        user-select: none;
+      }
+      .status-confirmed, .status-complete, .status-closed { background: rgba(44, 182, 125, 0.2); color: var(--accent-green); }
+      .status-tentative { background: rgba(255, 215, 0, 0.2); color: var(--accent-yellow); }
+      .status-open, .status-Open { background: rgba(127, 90, 240, 0.2); color: #C4B5FD; }
+      .status-progress, .status-in.progress { background: rgba(250, 140, 22, 0.2); color: #FA8C16; }
+      .status-review { background: rgba(24, 144, 255, 0.2); color: #1890FF; }
+      .status-cancelled { background: rgba(239, 68, 68, 0.2); color: #F87171; }
+    `}</style>
+  );
+
+  // Estado para gerir os dados e a interface do utilizador
+  const [events, setEvents] = useState([]);
+  const [tasks, setTasks] = useState([]);
+  const [currentView, setCurrentView] = useState('dashboard');
+  const [currentPeriod, setCurrentPeriod] = useState('dia');
+  const [customPeriod, setCustomPeriod] = useState({ active: false, start: null, end: null });
+  const [filters, setFilters] = useState({ text: '', setor: '', date: '' });
+  const [loading, setLoading] = useState(true);
+  const [notifications, setNotifications] = useState([]);
+  const [isQuickModalOpen, setQuickModalOpen] = useState(false);
+  const [isNavMenuOpen, setNavMenuOpen] = useState(false);
+  const [isCustomPeriodOpen, setCustomPeriodOpen] = useState(false);
+  const [isAdvancedFiltersOpen, setAdvancedFiltersOpen] = useState(false);
+  const [decomposingTask, setDecomposingTask] = useState(null);
+
+  // Configurações da API
+  const CONFIG = {
+    N8N_BASE_URL: 'https://n8n-x8go8cgk0g0c0wc4004wosoc.themodernservers.com',
+    ENDPOINTS: {
+        EVENTS: '/webhook/dashboard-events',
+        TASKS: '/webhook/clickup-tasks',
+        CREATE_TASK: '/webhook/dashboard-create-task',
+        CREATE_EVENT: '/webhook/dashboard-create-event',
+        CREATE_BULK_TASKS: '/webhook/dashboard-bulk-tasks',
+        UPDATE_TASK_STATUS: '/webhook/dashboard-update-task-status'
+    },
+    AUTO_SYNC: 300000
+  };
+
+  // Função para mostrar notificações
+  const showNotification = useCallback((message, type = 'info') => {
+    const id = Date.now();
+    setNotifications(prev => [...prev, { id, message, type }]);
+    setTimeout(() => {
+      setNotifications(prev => prev.filter(n => n.id !== id));
+    }, 3500);
+  }, []);
+
+  // Funções para carregar dados da API
+  const loadCalendarEvents = useCallback(async () => {
+    try {
+      const response = await fetch(`${CONFIG.N8N_BASE_URL}${CONFIG.ENDPOINTS.EVENTS}`);
+      const data = await response.json();
+      setEvents(data.success ? data.events || [] : []);
+    } catch (error) {
+      console.error('Erro ao carregar eventos:', error);
+      showNotification('Falha ao carregar eventos.', 'error');
+    }
+  }, [CONFIG.N8N_BASE_URL, CONFIG.ENDPOINTS.EVENTS, showNotification]);
+
+  const loadClickUpTasks = useCallback(async () => {
+    try {
+      const response = await fetch(`${CONFIG.N8N_BASE_URL}${CONFIG.ENDPOINTS.TASKS}`);
+      const data = await response.json();
+      if (data.success && Array.isArray(data.tasks)) {
+        const processedTasks = data.tasks.map(task => ({ 
+            id: task.id || `task-${Date.now()}`, 
+            title: task.title || task.name || 'Demanda sem nome', 
+            description: task.description || '', 
+            setor: task.setor || task.sector || 'Geral', 
+            status: task.status?.toLowerCase() || 'open', 
+            assignees: task.assignees || [], 
+            due_date: task.due_date, 
+            start: task.start || new Date().toISOString(), 
+            url: task.url, 
+            priority: task.priority || 'normal' 
+        }));
+        setTasks(processedTasks);
+      } else {
+        setTasks([]);
+      }
+    } catch (error) {
+      console.error('❌ Erro ao carregar ClickUp:', error);
+      showNotification('Falha ao carregar demandas.', 'error');
+    }
+  }, [CONFIG.N8N_BASE_URL, CONFIG.ENDPOINTS.TASKS, showNotification]);
+
+  const loadAllData = useCallback(async () => {
+    setLoading(true);
+    await Promise.all([loadCalendarEvents(), loadClickUpTasks()]);
+    setLoading(false);
+    showNotification('Dados sincronizados! 🦋', 'success');
+  }, [loadCalendarEvents, loadClickUpTasks, showNotification]);
+
+  // Efeito para carregar dados iniciais e configurar auto-sync
+  useEffect(() => {
+    loadAllData();
+    const syncInterval = setInterval(loadAllData, CONFIG.AUTO_SYNC);
+    return () => clearInterval(syncInterval);
+  }, [loadAllData, CONFIG.AUTO_SYNC]);
+
+  // Funções de filtragem e ordenação
+  const getFilteredData = useCallback(() => {
+    let now = new Date();
+    let startDate, endDate;
+
+    if (customPeriod.active) {
+        startDate = customPeriod.start;
+        endDate = customPeriod.end;
+    } else {
+        switch(currentPeriod) {
+            case 'dia':
+                startDate = new Date(new Date().setHours(0,0,0,0));
+                endDate = new Date(new Date().setHours(23,59,59,999));
+                break;
+            case 'semana':
+                const first = now.getDate() - now.getDay();
+                startDate = new Date(new Date(now.setDate(first)).setHours(0,0,0,0));
+                endDate = new Date(new Date(now.setDate(first + 6)).setHours(23,59,59,999));
+                break;
+            case 'mes':
+                startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+                endDate = new Date(new Date(now.getFullYear(), now.getMonth() + 1, 0).setHours(23,59,59,999));
+                break;
+            default:
+                startDate = null;
+                endDate = null;
+        }
+    }
+
+    const periodFilteredEvents = startDate && endDate 
+        ? events.filter(e => new Date(e.start) >= startDate && new Date(e.start) <= endDate)
+        : events;
+
+    const periodFilteredTasks = startDate && endDate
+        ? tasks.filter(t => new Date(t.start) >= startDate && new Date(t.start) <= endDate)
+        : tasks;
+
+    const applyAdvancedFilters = (items, type) => {
+        return items.filter(item => {
+            const textMatch = !filters.text || 
+                              item.title.toLowerCase().includes(filters.text.toLowerCase()) || 
+                              (item.description && item.description.toLowerCase().includes(filters.text.toLowerCase()));
+            const setorMatch = type === 'event' || !filters.setor || item.setor === filters.setor;
+            const dateMatch = !filters.date || new Date(item.start || item.due_date).toDateString() === new Date(filters.date).toDateString();
+            return textMatch && setorMatch && dateMatch;
+        });
+    };
+
+    return {
+        filteredEvents: applyAdvancedFilters(periodFilteredEvents, 'event'),
+        filteredTasks: applyAdvancedFilters(periodFilteredTasks, 'task'),
+    };
+  }, [events, tasks, currentPeriod, customPeriod, filters]);
+
+  const { filteredEvents, filteredTasks } = getFilteredData();
+
+  // Funções de manipulação de estado da interface
+  const handleSetPeriod = (period) => {
+    setCurrentPeriod(period);
+    setCustomPeriod({ active: false, start: null, end: null });
+    setCustomPeriodOpen(false);
+  };
+  
+  const handleApplyCustomPeriod = (start, end) => {
+    if (!start || !end || new Date(start) > new Date(end)) {
+        showNotification('⚠️ Período inválido', 'error');
+        return;
+    }
+    setCurrentPeriod('custom');
+    setCustomPeriod({ active: true, start: new Date(start), end: new Date(new Date(end).setHours(23,59,59,999)) });
+    setCustomPeriodOpen(false);
+    showNotification(`📆 Período personalizado aplicado.`, 'info');
+  };
+
+  const handleSelectView = (viewName) => {
+    setCurrentView(viewName);
+    setNavMenuOpen(false);
+  };
+  
+  // Renderização dos componentes
+  return (
+    <>
+      <GlobalStyles />
+      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+      
+      <div className="container" style={{maxWidth: '1400px', margin: '0 auto', padding: '32px 24px'}}>
+        <Header />
+        <Navigation 
+            currentView={currentView} 
+            onSelectView={handleSelectView}
+            isNavMenuOpen={isNavMenuOpen}
+            setNavMenuOpen={setNavMenuOpen}
+        />
+        <PeriodFilters 
+            currentPeriod={currentPeriod}
+            onSetPeriod={handleSetPeriod}
+            onApplyCustomPeriod={handleApplyCustomPeriod}
+            isCustomPeriodOpen={isCustomPeriodOpen}
+            setCustomPeriodOpen={setCustomPeriodOpen}
+            onToggleAdvancedFilters={() => setAdvancedFiltersOpen(p => !p)}
+        />
+        {isAdvancedFiltersOpen && (
+            <AdvancedFilters 
+                filters={filters}
+                setFilters={setFilters}
+                allTasks={tasks}
+            />
+        )}
+        <Metrics 
+            totalItems={events.length + tasks.length}
+            filteredItems={filteredEvents.length + filteredTasks.length}
+            currentPeriod={currentPeriod}
+            customPeriod={customPeriod}
+        />
+        <MainContent 
+            currentView={currentView}
+            events={filteredEvents}
+            tasks={filteredTasks}
+            onSyncCalendar={loadCalendarEvents}
+            onSyncClickUp={loadClickUpTasks}
+            showNotification={showNotification}
+            setDecomposingTask={setDecomposingTask}
+            refreshData={loadAllData}
+            config={CONFIG}
+        />
+      </div>
+
+      <FloatingActionButton onToggle={() => setQuickModalOpen(p => !p)} isOpen={isQuickModalOpen} />
+      
+      {isQuickModalOpen && (
+        <QuickActionsModal 
+            onClose={() => setQuickModalOpen(false)}
+            showNotification={showNotification}
+            config={CONFIG}
+            refreshData={loadAllData}
+        />
+      )}
+
+      {decomposingTask && (
+        <DecompositionModal
+            task={decomposingTask}
+            onClose={() => setDecomposingTask(null)}
+            showNotification={showNotification}
+            config={CONFIG}
+            refreshData={loadAllData}
+        />
+      )}
+
+      <LoadingIndicator show={loading} />
+      <NotificationCenter notifications={notifications} />
+    </>
+  );
+}
+
+// Subcomponentes
+
+const Header = () => (
+    <header className="header" style={{textAlign: 'center', marginBottom: '48px', color: 'white'}}>
+        <h1 style={{fontSize: '3rem', marginBottom: '12px', fontWeight: 800, letterSpacing: '-1.5px'}}>🎵 Dashboard MERACHI</h1>
+        <p style={{fontSize: '1.2rem', opacity: 0.8, marginBottom: '24px'}}>Gestão de Demandas - Confia no Processo</p>
+        <div className="badges" style={{display: 'flex', justifyContent: 'center', gap: '16px', flexWrap: 'wrap'}}>
+            <div className="badge connected" style={{display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', borderRadius: '12px', fontSize: '0.9rem', background: 'rgba(44, 182, 125, 0.15)', borderColor: 'rgba(44, 182, 125, 0.3)', color: '#BFF9DF', border: '1px solid'}}>📅 Google Calendar</div>
+            <div className="badge connected" style={{display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', borderRadius: '12px', fontSize: '0.9rem', background: 'rgba(44, 182, 125, 0.15)', borderColor: 'rgba(44, 182, 125, 0.3)', color: '#BFF9DF', border: '1px solid'}}>✅ ClickUp</div>
+            <div className="badge connected" style={{display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', borderRadius: '12px', fontSize: '0.9rem', background: 'rgba(44, 182, 125, 0.15)', borderColor: 'rgba(44, 182, 125, 0.3)', color: '#BFF9DF', border: '1px solid'}}>🔄 n8n</div>
         </div>
+    </header>
+);
 
-        <!-- Menu de Navegação Suspenso -->
-        <div class="nav-menu">
-            <div class="nav-dropdown">
-                <button class="nav-current" onclick="toggleNavMenu()" id="currentNav">
-                    📊 Dashboard
+const Navigation = ({ currentView, onSelectView, isNavMenuOpen, setNavMenuOpen }) => {
+    const navRef = useRef(null);
+    const viewLabels = {
+        dashboard: '📊 Dashboard',
+        agenda: '📅 Eventos da Agenda',
+        demandas: '✅ Demandas',
+        calendario: '🗓️ Calendário',
+    };
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (navRef.current && !navRef.current.contains(event.target)) {
+                setNavMenuOpen(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, [setNavMenuOpen]);
+
+    return (
+        <div ref={navRef} className="nav-menu" style={{marginBottom: '24px', position: 'relative', display: 'inline-block', minWidth: '280px', zIndex: 999}}>
+            <div className="nav-dropdown" style={{position: 'relative', width: '100%'}}>
+                <button className={`nav-current ${isNavMenuOpen ? 'open' : ''}`} onClick={() => setNavMenuOpen(!isNavMenuOpen)} style={{padding: '14px 24px', background: 'var(--card-bg)', border: '1px solid var(--border-color)', color: 'var(--text-primary)', borderRadius: 'var(--border-radius)', cursor: 'pointer', fontWeight: 600, fontSize: '1.1rem', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', backdropFilter: 'blur(var(--backdrop-blur))', transition: 'all 0.2s ease'}}>
+                    {viewLabels[currentView]}
+                    <span style={{fontSize: '0.8rem', transform: isNavMenuOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s ease'}}>▼</span>
                 </button>
-                <div class="nav-options" id="navOptions">
-                    <button class="nav-option" onclick="selectView('dashboard', '📊 Dashboard')">📊 Dashboard</button>
-                    <button class="nav-option" onclick="selectView('agenda', '📅 Eventos da Agenda')">📅 Eventos da Agenda</button>
-                    <button class="nav-option" onclick="selectView('demandas', '✅ Demandas')">✅ Demandas</button>
-                    <button class="nav-option" onclick="selectView('calendario', '🗓️ Calendário')">🗓️ Calendário</button>
-                </div>
+                {isNavMenuOpen && (
+                    <div className="nav-options open" style={{position: 'absolute', top: 'calc(100% + 8px)', left: 0, right: 0, background: 'var(--card-bg-solid)', border: '1px solid var(--border-color)', borderRadius: 'var(--border-radius)', boxShadow: 'var(--shadow)', zIndex: 9999, overflow: 'hidden', animation: 'fadeIn 0.2s ease'}}>
+                        {Object.entries(viewLabels).map(([key, label]) => (
+                            <button key={key} className="nav-option" onClick={() => onSelectView(key)} style={{padding: '14px 24px', border: 'none', background: 'transparent', color: 'var(--text-secondary)', cursor: 'pointer', fontWeight: 500, width: '100%', textAlign: 'left', transition: 'all 0.2s ease'}}>
+                                {label}
+                            </button>
+                        ))}
+                    </div>
+                )}
             </div>
         </div>
+    );
+};
 
-        <!-- Filtros de Período -->
-        <div class="period-filters">
-            <button class="period-btn active" onclick="setPeriod('dia')">📅 Dia</button>
-            <button class="period-btn" onclick="setPeriod('semana')">📊 Semana</button>
-            <button class="period-btn" onclick="setPeriod('mes')">📋 Mês</button>
-            <div class="custom-period-dropdown">
-                <button class="period-btn" onclick="toggleCustomPeriod()">📆 Período</button>
-                <div class="custom-period-content" id="customPeriodDropdown">
-                    <div class="date-input-group">
-                        <label class="date-input-label">Data Inicial:</label>
-                        <input type="date" class="date-input" id="customStartDate">
+const PeriodFilters = ({ currentPeriod, onSetPeriod, onApplyCustomPeriod, isCustomPeriodOpen, setCustomPeriodOpen, onToggleAdvancedFilters }) => {
+    const customPeriodRef = useRef(null);
+    const [dates, setDates] = useState({ start: '', end: '' });
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (customPeriodRef.current && !customPeriodRef.current.contains(event.target)) {
+                setCustomPeriodOpen(false);
+            }
+        };
+        if (isCustomPeriodOpen) {
+            document.addEventListener("mousedown", handleClickOutside);
+        }
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, [isCustomPeriodOpen, setCustomPeriodOpen]);
+    
+    const handleApply = () => {
+        onApplyCustomPeriod(dates.start, dates.end);
+    };
+
+    return (
+        <div className="period-filters" style={{display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '12px', marginBottom: '24px', padding: '12px', background: 'var(--card-bg)', border: '1px solid var(--border-color)', borderRadius: 'var(--border-radius)', backdropFilter: 'blur(var(--backdrop-blur))', boxShadow: 'var(--shadow)', flexWrap: 'wrap', zIndex: 500, position: 'relative'}}>
+            <button className={`period-btn ${currentPeriod === 'dia' ? 'active' : ''}`} onClick={() => onSetPeriod('dia')} style={{padding: '10px 20px', border: '1px solid transparent', background: currentPeriod === 'dia' ? 'var(--primary-purple)' : 'transparent', color: currentPeriod === 'dia' ? 'white' : 'var(--text-secondary)', borderRadius: '12px', cursor: 'pointer', fontWeight: 600, fontSize: '0.9rem', transition: 'all 0.2s ease'}}>📅 Dia</button>
+            <button className={`period-btn ${currentPeriod === 'semana' ? 'active' : ''}`} onClick={() => onSetPeriod('semana')} style={{padding: '10px 20px', border: '1px solid transparent', background: currentPeriod === 'semana' ? 'var(--primary-purple)' : 'transparent', color: currentPeriod === 'semana' ? 'white' : 'var(--text-secondary)', borderRadius: '12px', cursor: 'pointer', fontWeight: 600, fontSize: '0.9rem', transition: 'all 0.2s ease'}}>📊 Semana</button>
+            <button className={`period-btn ${currentPeriod === 'mes' ? 'active' : ''}`} onClick={() => onSetPeriod('mes')} style={{padding: '10px 20px', border: '1px solid transparent', background: currentPeriod === 'mes' ? 'var(--primary-purple)' : 'transparent', color: currentPeriod === 'mes' ? 'white' : 'var(--text-secondary)', borderRadius: '12px', cursor: 'pointer', fontWeight: 600, fontSize: '0.9rem', transition: 'all 0.2s ease'}}>📋 Mês</button>
+            <div ref={customPeriodRef} className="custom-period-dropdown" style={{position: 'relative', display: 'inline-block'}}>
+                <button className={`period-btn ${currentPeriod === 'custom' ? 'active' : ''}`} onClick={() => setCustomPeriodOpen(!isCustomPeriodOpen)} style={{padding: '10px 20px', border: '1px solid transparent', background: currentPeriod === 'custom' ? 'var(--primary-purple)' : 'transparent', color: currentPeriod === 'custom' ? 'white' : 'var(--text-secondary)', borderRadius: '12px', cursor: 'pointer', fontWeight: 600, fontSize: '0.9rem', transition: 'all 0.2s ease'}}>📆 Período</button>
+                {isCustomPeriodOpen && (
+                    <div className="custom-period-content open" style={{position: 'absolute', top: 'calc(100% + 8px)', left: '50%', transform: 'translateX(-50%)', background: 'var(--card-bg-solid)', border: '1px solid var(--border-color)', borderRadius: 'var(--border-radius)', boxShadow: 'var(--shadow)', padding: '20px', marginTop: '8px', zIndex: 100, minWidth: '300px', animation: 'fadeIn 0.2s ease'}}>
+                        <div className="date-input-group" style={{marginBottom: '16px'}}>
+                            <label className="date-input-label" style={{display: 'block', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '8px', fontSize: '0.9rem'}}>Data Inicial:</label>
+                            <input type="date" className="date-input" value={dates.start} onChange={e => setDates({...dates, start: e.target.value})} style={{width: '100%', padding: '10px 14px', border: '1px solid var(--border-color)', background: 'var(--card-bg)', color: 'var(--text-primary)', borderRadius: '8px', fontSize: '0.9rem', transition: 'all 0.2s ease'}} />
+                        </div>
+                        <div className="date-input-group" style={{marginBottom: '16px'}}>
+                            <label className="date-input-label" style={{display: 'block', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '8px', fontSize: '0.9rem'}}>Data Final:</label>
+                            <input type="date" className="date-input" value={dates.end} onChange={e => setDates({...dates, end: e.target.value})} style={{width: '100%', padding: '10px 14px', border: '1px solid var(--border-color)', background: 'var(--card-bg)', color: 'var(--text-primary)', borderRadius: '8px', fontSize: '0.9rem', transition: 'all 0.2s ease'}} />
+                        </div>
+                        <button className="apply-period-btn" onClick={handleApply} style={{width: '100%', padding: '12px', background: 'var(--primary-purple)', color: 'white', border: 'none', borderRadius: '8px', fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s ease', marginTop: '8px'}}>Aplicar Período</button>
                     </div>
-                    <div class="date-input-group">
-                        <label class="date-input-label">Data Final:</label>
-                        <input type="date" class="date-input" id="customEndDate">
-                    </div>
-                    <button class="apply-period-btn" onclick="applyCustomPeriod()">Aplicar Período</button>
-                </div>
+                )}
             </div>
-            <button class="period-btn" onclick="toggleAdvancedFilters()">🔍 Filtros</button>
+            <button className="period-btn" onClick={onToggleAdvancedFilters} style={{padding: '10px 20px', border: '1px solid transparent', background: 'transparent', color: 'var(--text-secondary)', borderRadius: '12px', cursor: 'pointer', fontWeight: 600, fontSize: '0.9rem', transition: 'all 0.2s ease'}}>🔍 Filtros</button>
         </div>
+    );
+};
 
-        <!-- Filtros Avançados -->
-        <div class="advanced-filters" id="advancedFilters" style="display: none;">
-            <div class="filters-title">
+const AdvancedFilters = ({ filters, setFilters, allTasks }) => {
+    const setores = [...new Set(allTasks.map(task => task.setor || 'Geral'))].sort();
+    
+    const handleFilterChange = (e) => {
+        const { id, value } = e.target;
+        setFilters(prev => ({ ...prev, [id]: value }));
+    };
+
+    const clearAllFilters = () => {
+        setFilters({ text: '', setor: '', date: '' });
+    };
+
+    return (
+        <div className="advanced-filters" style={{background: 'var(--card-bg)', border: '1px solid var(--border-color)', backdropFilter: 'blur(var(--backdrop-blur))', borderRadius: 'var(--border-radius)', padding: '24px', marginBottom: '24px', boxShadow: 'var(--shadow)', animation: 'fadeIn 0.3s ease'}}>
+            <div className="filters-title" style={{fontWeight: 600, fontSize: '1.1rem', color: 'var(--text-primary)', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px'}}>
                 🔍 Filtros Avançados
-                <button class="clear-filters" onclick="clearAllFilters()">Limpar</button>
+                <button className="clear-filters" onClick={clearAllFilters} style={{marginLeft: 'auto', padding: '8px 16px', background: 'rgba(255, 255, 255, 0.1)', border: 'none', borderRadius: '8px', color: 'var(--text-secondary)', cursor: 'pointer', fontSize: '0.9rem', fontWeight: 500}}>Limpar Filtros</button>
             </div>
-            <div class="filters-row">
-                <input type="text" class="filter-input" id="filterText" placeholder="Buscar por título..." onkeyup="applyFilters()">
-                <select class="filter-input" id="filterSetor" onchange="applyFilters()">
+            <div className="filters-row" style={{display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px', marginBottom: '16px'}}>
+                <input type="text" className="filter-input" id="text" placeholder="Buscar por título..." value={filters.text} onChange={handleFilterChange} style={{padding: '12px 16px', border: '1px solid var(--border-color)', borderRadius: '12px', fontSize: '0.9rem', background: '#16161A', color: 'var(--text-primary)'}} />
+                <select className="filter-input" id="setor" value={filters.setor} onChange={handleFilterChange} style={{padding: '12px 16px', border: '1px solid var(--border-color)', borderRadius: '12px', fontSize: '0.9rem', background: '#16161A', color: 'var(--text-primary)'}}>
                     <option value="">Todos os setores</option>
+                    {setores.map(setor => <option key={setor} value={setor}>{setor}</option>)}
                 </select>
-                <input type="date" class="filter-input" id="filterDate" onchange="applyFilters()">
+                <input type="date" className="filter-input" id="date" value={filters.date} onChange={handleFilterChange} style={{padding: '12px 16px', border: '1px solid var(--border-color)', borderRadius: '12px', fontSize: '0.9rem', background: '#16161A', color: 'var(--text-primary)'}} />
             </div>
         </div>
+    );
+};
 
-        <!-- Métricas -->
-        <div class="metrics">
-            <div class="metric-card">
-                <div class="metric-number" id="totalEvents">0</div>
-                <div class="metric-label">Total de Eventos</div>
+const Metrics = ({ totalItems, filteredItems, currentPeriod, customPeriod }) => {
+    const getPeriodLabel = () => {
+        if (currentPeriod === 'custom' && customPeriod.active) {
+            const start = new Date(customPeriod.start).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+            const end = new Date(customPeriod.end).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+            return `${start} - ${end}`;
+        }
+        const labels = { 'dia': 'Hoje', 'semana': 'Esta Semana', 'mes': 'Este Mês' };
+        return labels[currentPeriod];
+    };
+
+    return (
+        <div className="metrics" style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', marginBottom: '32px'}}>
+            <div className="metric-card" style={{background: 'var(--card-bg)', border: '1px solid var(--border-color)', padding: '32px', borderRadius: 'var(--border-radius)', boxShadow: 'var(--shadow)', textAlign: 'center', backdropFilter: 'blur(var(--backdrop-blur))', transition: 'transform 0.2s ease, box-shadow 0.2s ease'}}>
+                <div className="metric-number" style={{fontSize: '3.5rem', fontWeight: 800, color: 'var(--primary-purple)', marginBottom: '8px', letterSpacing: '-2px'}}>{totalItems}</div>
+                <div className="metric-label" style={{fontSize: '1rem', fontWeight: 500, color: 'var(--text-secondary)'}}>Total de Itens</div>
             </div>
-            <div class="metric-card">
-                <div class="metric-number" id="todayEvents">0</div>
-                <div class="metric-label" id="periodLabel">Hoje</div>
-            </div>
-        </div>
-
-        <!-- Conteúdo Principal -->
-        <div class="main-content">
-            <!-- Dashboard Geral -->
-            <div id="dashboard-view" class="content-view active">
-                <div class="split-view">
-                    <div class="section">
-                        <div class="section-title">
-                            📅 Eventos da Agenda
-                            <button class="sync-btn" onclick="syncCalendar()">🔄 Sync</button>
-                        </div>
-                        <div id="calendarEvents">
-                            <div class="empty-state">Carregando eventos...</div>
-                        </div>
-                    </div>
-
-                    <div class="section">
-                        <div class="section-title">
-                            ✅ Demandas
-                            <button class="sync-btn" onclick="syncClickUp()">🔄 Sync</button>
-                        </div>
-                        <div id="clickupTasks">
-                            <div class="empty-state">Carregando demandas...</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Eventos da Agenda -->
-            <div id="agenda-view" class="content-view">
-                <div class="section">
-                    <div class="section-title">
-                        📅 Eventos da Agenda
-                        <button class="sync-btn" onclick="syncCalendar()">🔄 Sync</button>
-                    </div>
-                    <div id="agendaEvents">
-                        <div class="empty-state">Carregando eventos...</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Demandas -->
-            <div id="demandas-view" class="content-view">
-                <div class="section">
-                    <div class="section-title">
-                        ✅ Demandas por Setor
-                        <button class="sync-btn" onclick="syncClickUp()">🔄 Sync</button>
-                    </div>
-                    <div id="demandasTasks">
-                        <div class="empty-state">Carregando demandas...</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Calendário -->
-            <div id="calendario-view" class="content-view">
-                <div class="section">
-                    <div class="section-title">
-                        🗓️ Visão de Calendário
-                        <span id="calendarMonth" style="margin-left: auto; font-size: 1rem;"></span>
-                    </div>
-                    <div id="calendarGrid">
-                        <div class="empty-state">Carregando calendário...</div>
-                    </div>
-                </div>
+            <div className="metric-card" style={{background: 'var(--card-bg)', border: '1px solid var(--border-color)', padding: '32px', borderRadius: 'var(--border-radius)', boxShadow: 'var(--shadow)', textAlign: 'center', backdropFilter: 'blur(var(--backdrop-blur))', transition: 'transform 0.2s ease, box-shadow 0.2s ease'}}>
+                <div className="metric-number" style={{fontSize: '3.5rem', fontWeight: 800, color: 'var(--primary-purple)', marginBottom: '8px', letterSpacing: '-2px'}}>{filteredItems}</div>
+                <div className="metric-label" style={{fontSize: '1rem', fontWeight: 500, color: 'var(--text-secondary)'}}>{getPeriodLabel()}</div>
             </div>
         </div>
-    </div>
+    );
+};
 
-    <!-- Floating Action Button -->
-    <button class="fab" onclick="toggleQuickModal()" id="fabBtn">
-        ➕
+const MainContent = ({ currentView, events, tasks, onSyncCalendar, onSyncClickUp, showNotification, setDecomposingTask, refreshData, config }) => {
+    const renderView = () => {
+        switch (currentView) {
+            case 'dashboard':
+                return (
+                    <div className="split-view" style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px'}}>
+                        <Section title="📅 Eventos da Agenda" onSync={onSyncCalendar}>
+                            <ItemsList items={events} type="event" showNotification={showNotification} setDecomposingTask={setDecomposingTask} refreshData={refreshData} config={config} />
+                        </Section>
+                        <Section title="✅ Demandas" onSync={onSyncClickUp}>
+                            <TasksBySector tasks={tasks} showNotification={showNotification} setDecomposingTask={setDecomposingTask} refreshData={refreshData} config={config} />
+                        </Section>
+                    </div>
+                );
+            case 'agenda':
+                return (
+                    <Section title="📅 Eventos da Agenda" onSync={onSyncCalendar}>
+                        <ItemsList items={events} type="event" showNotification={showNotification} setDecomposingTask={setDecomposingTask} refreshData={refreshData} config={config} />
+                    </Section>
+                );
+            case 'demandas':
+                return (
+                    <Section title="✅ Demandas por Setor" onSync={onSyncClickUp}>
+                        <TasksBySector tasks={tasks} showNotification={showNotification} setDecomposingTask={setDecomposingTask} refreshData={refreshData} config={config} />
+                    </Section>
+                );
+            case 'calendario':
+                return (
+                    <Section title="🗓️ Visão de Calendário">
+                        <CalendarView events={events} tasks={tasks} />
+                    </Section>
+                );
+            default:
+                return null;
+        }
+    };
+
+    return (
+        <main className="main-content" style={{display: 'grid', gridTemplateColumns: '1fr', gap: '32px'}}>
+            <div className="content-view active" style={{display: 'block'}}>
+                {renderView()}
+            </div>
+        </main>
+    );
+};
+
+const Section = ({ title, onSync, children }) => (
+    <section className="section" style={{background: 'var(--card-bg)', border: '1px solid var(--border-color)', borderRadius: 'var(--border-radius)', padding: '24px 32px', boxShadow: 'var(--shadow)', marginBottom: '24px', backdropFilter: 'blur(var(--backdrop-blur))'}}>
+        <div className="section-title" style={{fontSize: '1.5rem', fontWeight: 700, marginBottom: '24px', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '12px'}}>
+            {title}
+            {onSync && <button className="sync-btn" onClick={onSync} style={{marginLeft: 'auto', padding: '10px 20px', border: '1px solid var(--border-color)', background: 'rgba(255, 255, 255, 0.05)', color: 'var(--text-secondary)', borderRadius: '12px', cursor: 'pointer', fontSize: '0.9rem', fontWeight: 600, transition: 'all 0.2s ease'}}>🔄 Sync</button>}
+        </div>
+        {children}
+    </section>
+);
+
+const ItemsList = ({ items, type, showNotification, setDecomposingTask, refreshData, config }) => {
+    if (items.length === 0) {
+        return <div className="empty-state" style={{textAlign: 'center', padding: '60px', color: 'var(--text-secondary)', fontSize: '1.1rem'}}>📭 Nenhum item encontrado</div>;
+    }
+    return items.map(item => <Item key={item.id} item={item} type={type} showNotification={showNotification} setDecomposingTask={setDecomposingTask} refreshData={refreshData} config={config} />);
+};
+
+const TasksBySector = ({ tasks, showNotification, setDecomposingTask, refreshData, config }) => {
+    if (tasks.length === 0) {
+        return <div className="empty-state" style={{textAlign: 'center', padding: '60px', color: 'var(--text-secondary)', fontSize: '1.1rem'}}>📭 Nenhuma demanda encontrada</div>;
+    }
+    const tasksPorSetor = tasks.reduce((acc, task) => {
+        const setor = task.setor || 'Geral';
+        if (!acc[setor]) acc[setor] = [];
+        acc[setor].push(task);
+        return acc;
+    }, {});
+    const ordem = ['Design', 'Audiovisual', 'Social Media', 'Gestão de Projetos', 'Estúdio', 'Músico', 'Geral'];
+    const setoresOrdenados = Object.keys(tasksPorSetor).sort((a,b) => (ordem.indexOf(a) === -1 ? 99 : ordem.indexOf(a)) - (ordem.indexOf(b) === -1 ? 99 : ordem.indexOf(b)));
+    
+    return setoresOrdenados.map(setor => (
+        <div key={setor} className="sector-section" style={{marginBottom: '32px'}}>
+            <div className="sector-title" style={{fontSize: '1.1rem', fontWeight: 600, color: 'var(--primary-purple-light)', marginBottom: '16px', padding: '10px 16px', background: 'rgba(127, 90, 240, 0.1)', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
+                {`${getSectorIcon(setor)} ${setor}`}
+                <span className="sector-count" style={{background: 'var(--primary-purple)', color: 'white', padding: '4px 10px', borderRadius: '20px', fontSize: '0.8rem', fontWeight: 700}}>{tasksPorSetor[setor].length}</span>
+            </div>
+            {tasksPorSetor[setor].map(task => <Item key={task.id} item={task} type="task" showNotification={showNotification} setDecomposingTask={setDecomposingTask} refreshData={refreshData} config={config} />)}
+        </div>
+    ));
+};
+
+const getSectorIcon = (setor) => ({ 'Design': '🎨', 'Audiovisual': '🎬', 'Social Media': '📱', 'Gestão de Projetos': '📊', 'Estúdio': '🎵', 'Estúdio ': '🎵', 'Músico': '🎤', 'Geral': '📋' }[setor.trim()] || '📋');
+
+const Item = ({ item, type, showNotification, setDecomposingTask, refreshData, config }) => {
+    const clickTimeout = useRef(null);
+
+    const getStatusLabel = (status) => {
+        if (type === 'event') {
+            return { 'confirmed': '✅ Confirmado', 'tentative': '⏳ Tentativo', 'cancelled': '❌ Cancelado' }[status] || status;
+        }
+        return { 'open': '📋 Aberta', 'progress': '⚡ Progresso', 'review': '👀 Revisão', 'complete': '✅ Completa', 'closed': '✅ Fechada' }[status] || `📝 ${status}`;
+    };
+
+    const handleStatusUpdate = async (newStatus) => {
+        try {
+            const response = await fetch(`${config.N8N_BASE_URL}${config.ENDPOINTS.UPDATE_TASK_STATUS}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ task_id: item.id, new_status: newStatus })
+            });
+            const result = await response.json();
+            if (result.success) {
+                showNotification(`Estado atualizado para ${getStatusLabel(newStatus)}`, 'success');
+                refreshData();
+            } else {
+                throw new Error(result.message || 'Falha ao atualizar estado');
+            }
+        } catch (error) {
+            showNotification(error.message, 'error');
+        }
+    };
+
+    const handleStatusClick = () => {
+        if (type !== 'task') return;
+
+        if (clickTimeout.current) {
+            // Double click
+            clearTimeout(clickTimeout.current);
+            clickTimeout.current = null;
+            handleStatusUpdate('open'); // Reset to open
+        } else {
+            // Single click
+            clickTimeout.current = setTimeout(() => {
+                const statuses = ['open', 'progress', 'review', 'complete'];
+                const currentIndex = statuses.indexOf(item.status);
+                const nextStatus = statuses[(currentIndex + 1) % statuses.length];
+                handleStatusUpdate(nextStatus);
+                clickTimeout.current = null;
+            }, 250);
+        }
+    };
+
+    const dueDate = item.due_date ? new Date(item.due_date) : null;
+    let dueDateHTML = '';
+    if (dueDate) {
+        const now = new Date(); now.setHours(0,0,0,0);
+        const isOverdue = dueDate < now;
+        const dueDateText = dueDate.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit' });
+        dueDateHTML = `<span style="color:${isOverdue ? '#F87171' : 'inherit'}; font-weight: ${isOverdue ? '600' : '500'};">📅 ${dueDateText} ${isOverdue ? '(Vencida)' : ''}</span>`;
+    }
+
+    return (
+        <div className="item" style={{padding: '20px', marginBottom: '12px', background: 'rgba(127, 90, 240, 0.05)', borderRadius: '12px', borderLeft: '5px solid var(--primary-purple)', cursor: 'pointer', transition: 'all 0.2s ease', position: 'relative'}}>
+            <div className="item-title" style={{fontWeight: 600, fontSize: '1.1rem', marginBottom: '10px', color: 'var(--text-primary)', lineHeight: 1.4}}>{item.title}</div>
+            <div className="item-meta" style={{fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'flex', gap: '16px', flexWrap: 'wrap', alignItems: 'center'}}>
+                {type === 'event' && <span>🕐 {new Date(item.start).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}</span>}
+                {type === 'task' && item.assignees?.length > 0 && <span>👤 {item.assignees.join(', ')}</span>}
+                {type === 'task' && dueDateHTML && <span dangerouslySetInnerHTML={{ __html: dueDateHTML }} />}
+                <span className={`status-badge status-${item.status.replace(' ','.')}`} onClick={handleStatusClick} title="Clique para avançar, clique duplo para resetar">
+                    {getStatusLabel(item.status)}
+                </span>
+                {type === 'task' && (
+                    <button onClick={(e) => { e.stopPropagation(); setDecomposingTask(item); }} title="Decompor tarefa com IA" style={{background: 'none', border: 'none', color: 'var(--primary-purple-light)', cursor: 'pointer', fontSize: '1.2rem', padding: '0 5px'}}>
+                        ✨
+                    </button>
+                )}
+            </div>
+            {item.description && <div style={{fontSize: '0.85rem', color: 'var(--text-secondary)', marginTop: '8px', lineHeight: 1.5}}>{item.description.substring(0,120)}{item.description.length > 120 ? '...' : ''}</div>}
+        </div>
+    );
+};
+
+const CalendarView = ({ events, tasks }) => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth();
+    const monthLabel = now.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+
+    const firstDay = new Date(year, month, 1);
+    const startDate = new Date(firstDay);
+    startDate.setDate(startDate.getDate() - firstDay.getDay());
+    
+    const days = Array.from({ length: 42 }).map((_, i) => {
+        const date = new Date(startDate);
+        date.setDate(date.getDate() + i);
+        return date;
+    });
+
+    const getItemsForDate = (date, items) => items.filter(item => new Date(item.start).toDateString() === date.toDateString());
+
+    return (
+        <div>
+            <div style={{textAlign: 'center', fontSize: '1.2rem', fontWeight: 600, marginBottom: '20px'}}>{monthLabel}</div>
+            <div className="calendar-view" style={{display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '8px', marginTop: '16px'}}>
+                {['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'].map(day => (
+                    <div key={day} className="calendar-day-header" style={{textAlign: 'center', fontWeight: 600, padding: '12px', background: 'rgba(255, 255, 255, 0.05)', borderRadius: '12px', fontSize: '0.85rem', color: 'var(--text-secondary)'}}>{day}</div>
+                ))}
+                {days.map(date => (
+                    <div key={date.toISOString()} className={`calendar-day ${date.toDateString() === now.toDateString() ? 'today' : ''} ${date.getMonth() !== month ? 'other-month' : ''}`} style={{aspectRatio: 1, border: `1px solid ${date.toDateString() === now.toDateString() ? 'var(--primary-purple)' : 'var(--border-color)'}`, borderRadius: '12px', padding: '8px', fontSize: '0.8rem', position: 'relative', minHeight: '100px', overflow: 'hidden', background: date.toDateString() === now.toDateString() ? 'rgba(127, 90, 240, 0.1)' : 'rgba(255, 255, 255, 0.02)', transition: 'all 0.2s ease', opacity: date.getMonth() !== month ? 0.3 : 1}}>
+                        <div style={{fontWeight: 600, marginBottom: '4px'}}>{date.getDate()}</div>
+                        {getItemsForDate(date, events).map(e => <div key={e.id} className="calendar-event" style={{background: 'var(--primary-purple)', color: 'white', padding: '3px 6px', borderRadius: '4px', fontSize: '0.7rem', margin: '3px 0', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', lineHeight: 1.3}} title={e.title}>{e.title}</div>)}
+                        {getItemsForDate(date, tasks).map(t => <div key={t.id} className="calendar-task" style={{background: 'var(--accent-green)', color: 'var(--card-bg-solid)', padding: '3px 6px', borderRadius: '4px', fontSize: '0.7rem', margin: '3px 0', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', lineHeight: 1.3, fontWeight: 600}} title={t.title}>{t.title}</div>)}
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+};
+
+const FloatingActionButton = ({ onToggle, isOpen }) => (
+    <button className={`fab ${isOpen ? 'active' : ''}`} onClick={onToggle} style={{position: 'fixed', bottom: '30px', right: '30px', width: '64px', height: '64px', background: isOpen ? '#EF4444' : 'linear-gradient(135deg, var(--primary-purple), var(--primary-purple-light))', border: 'none', borderRadius: '50%', boxShadow: '0 10px 30px rgba(127, 90, 240, 0.4)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '28px', color: 'white', transition: 'all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)', zIndex: 1001, transform: isOpen ? 'rotate(45deg)' : 'none'}}>
+        {isOpen ? '✕' : '➕'}
     </button>
+);
 
-    <!-- Modal de Quick Actions -->
-    <div class="quick-modal" id="quickModal" onclick="closeModalOnBackdrop(event)">
-        <div class="modal-content" onclick="event.stopPropagation()">
-            <button class="modal-close" onclick="closeQuickModal()">✕</button>
-            
-            <div class="modal-header">
-                <div class="modal-title">
-                    ⚡ Quick Actions
+const QuickActionsModal = ({ onClose, showNotification, config, refreshData }) => {
+    const modalRef = useRef(null);
+    const [activeTab, setActiveTab] = useState('task');
+    const [taskData, setTaskData] = useState({ title: '', setor: '', priority: 'normal', due_date: '', assignee: '', description: '' });
+    const [eventData, setEventData] = useState({ title: '', date: '', time: '', duration: '60', location: '', attendees: '', description: '' });
+    const [bulkData, setBulkData] = useState({ text: '', default_setor: '', default_priority: '', default_assignee: '' });
+    const [isSubmitting, setSubmitting] = useState(false);
+    const [isGenerating, setIsGenerating] = useState(false);
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (modalRef.current && !modalRef.current.contains(event.target)) {
+                onClose();
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, [onClose]);
+
+    const handleGenerateDescription = async () => {
+        if (!taskData.title) {
+            showNotification("Por favor, insira um título para a tarefa primeiro.", "error");
+            return;
+        }
+        setIsGenerating(true);
+        try {
+            const prompt = `Gere uma descrição curta e objetiva para uma tarefa com o título "${taskData.title}". A descrição deve ser útil para quem for executar a tarefa. Se o título mencionar um setor, considere isso na descrição.`;
+            let chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
+            const payload = { contents: chatHistory };
+            const apiKey = "";
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const result = await response.json();
+            if (result.candidates && result.candidates.length > 0) {
+                const text = result.candidates[0].content.parts[0].text;
+                setTaskData(prev => ({ ...prev, description: text }));
+                showNotification("Descrição gerada com sucesso!", "success");
+            } else {
+                throw new Error("A API não retornou uma descrição.");
+            }
+        } catch (error) {
+            showNotification(`Erro ao gerar descrição: ${error.message}`, "error");
+        } finally {
+            setIsGenerating(false);
+        }
+    };
+
+    const handleFormSubmit = async (e) => {
+        e.preventDefault();
+        setSubmitting(true);
+        try {
+            let endpoint, payload, successMessage;
+            if (activeTab === 'task') {
+                endpoint = config.ENDPOINTS.CREATE_TASK;
+                payload = { ...taskData, source: 'dashboard_quick_action', created_at: new Date().toISOString() };
+                successMessage = '✅ Tarefa criada com sucesso!';
+            } else if (activeTab === 'event') {
+                const { date, time, duration, ...rest } = eventData;
+                const startDateTime = new Date(`${date}T${time}`);
+                const endDateTime = new Date(startDateTime.getTime() + parseInt(duration) * 60000);
+                endpoint = config.ENDPOINTS.CREATE_EVENT;
+                payload = { ...rest, start_datetime: startDateTime.toISOString(), end_datetime: endDateTime.toISOString(), attendees: eventData.attendees.split(',').map(em => em.trim()).filter(Boolean), source: 'dashboard_quick_action', created_at: new Date().toISOString() };
+                successMessage = '📅 Evento criado com sucesso!';
+            } else { // bulk
+                endpoint = config.ENDPOINTS.CREATE_BULK_TASKS;
+                payload = { bulk_text: bulkData.text, default_setor: bulkData.default_setor, default_priority: bulkData.default_priority, default_assignee: bulkData.default_assignee, source: 'dashboard_bulk_action', created_at: new Date().toISOString() };
+                successMessage = '🤖 Tarefas em massa enviadas para processamento!';
+            }
+
+            const response = await fetch(`${config.N8N_BASE_URL}${endpoint}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const result = await response.json();
+
+            if (result.success) {
+                showNotification(successMessage, 'success');
+                onClose();
+                setTimeout(refreshData, 2000);
+            } else {
+                throw new Error(result.message || `Erro ao criar ${activeTab}`);
+            }
+        } catch (error) {
+            showNotification(`❌ Erro: ${error.message}`, 'error');
+        } finally {
+            setSubmitting(false);
+        }
+    };
+    
+    const renderForm = () => {
+        const commonInputStyle = {width: '100%', padding: '14px 18px', border: '1px solid var(--border-color)', borderRadius: '12px', fontSize: '1rem', fontFamily: 'inherit', transition: 'all 0.2s ease', background: '#16161A', color: 'var(--text-primary)'};
+        const formGroupStyle = {marginBottom: '20px'};
+        const formLabelStyle = {display: 'block', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '10px', fontSize: '0.9rem'};
+        const formRowStyle = {display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px'};
+
+        switch(activeTab) {
+            case 'task':
+                return (
+                    <>
+                        <div style={formGroupStyle}>
+                            <label style={formLabelStyle}>📝 Título da Tarefa</label>
+                            <input type="text" value={taskData.title} onChange={e => setTaskData({...taskData, title: e.target.value})} style={commonInputStyle} placeholder="Ex: Finalizar mix da música" required />
+                        </div>
+                        <div style={formRowStyle}>
+                            <div style={formGroupStyle}>
+                                <label style={formLabelStyle}>🏢 Setor</label>
+                                <select value={taskData.setor} onChange={e => setTaskData({...taskData, setor: e.target.value})} style={commonInputStyle} required>
+                                    <option value="">Selecionar setor</option>
+                                    <option value="Design">🎨 Design</option>
+                                    <option value="Audiovisual">🎬 Audiovisual</option>
+                                    <option value="Social Media">📱 Social Media</option>
+                                    <option value="Gestão de Projetos">📊 Gestão de Projetos</option>
+                                    <option value="Estúdio">🎵 Estúdio</option>
+                                    <option value="Músico">🎤 Músico</option>
+                                    <option value="Geral">📋 Geral</option>
+                                </select>
+                            </div>
+                            <div style={formGroupStyle}>
+                                <label style={formLabelStyle}>⚡ Prioridade</label>
+                                <select value={taskData.priority} onChange={e => setTaskData({...taskData, priority: e.target.value})} style={commonInputStyle}>
+                                    <option value="normal">📌 Normal</option>
+                                    <option value="high">🔥 Alta</option>
+                                    <option value="urgent">🚨 Urgente</option>
+                                    <option value="low">📋 Baixa</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div style={formGroupStyle}>
+                            <label style={{...formLabelStyle, display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
+                                <span>📄 Descrição</span>
+                                <button type="button" onClick={handleGenerateDescription} disabled={isGenerating} style={{background: 'none', border: '1px solid var(--primary-purple)', color: 'var(--primary-purple)', padding: '4px 8px', borderRadius: '8px', cursor: 'pointer', fontSize: '0.8rem'}}>
+                                    {isGenerating ? 'Gerando...' : '✨ Gerar com IA'}
+                                </button>
+                            </label>
+                            <textarea value={taskData.description} onChange={e => setTaskData({...taskData, description: e.target.value})} style={{...commonInputStyle, resize: 'vertical', minHeight: '120px'}} placeholder="Detalhes da tarefa..."></textarea>
+                        </div>
+                    </>
+                );
+            case 'event':
+                return (
+                     <>
+                        <div style={formGroupStyle}>
+                            <label style={formLabelStyle}>📅 Título do Evento</label>
+                            <input type="text" value={eventData.title} onChange={e => setEventData({...eventData, title: e.target.value})} style={commonInputStyle} placeholder="Ex: Reunião CNP" required />
+                        </div>
+                        <div style={formRowStyle}>
+                            <div style={formGroupStyle}>
+                                <label style={formLabelStyle}>📅 Data</label>
+                                <input type="date" value={eventData.date} onChange={e => setEventData({...eventData, date: e.target.value})} style={commonInputStyle} required />
+                            </div>
+                            <div style={formGroupStyle}>
+                                <label style={formLabelStyle}>🕐 Horário</label>
+                                <input type="time" value={eventData.time} onChange={e => setEventData({...eventData, time: e.target.value})} style={commonInputStyle} required />
+                            </div>
+                        </div>
+                        <div style={formRowStyle}>
+                            <div style={formGroupStyle}>
+                                <label style={formLabelStyle}>⏱️ Duração (minutos)</label>
+                                <select value={eventData.duration} onChange={e => setEventData({...eventData, duration: e.target.value})} style={commonInputStyle}>
+                                    <option value="30">30 min</option>
+                                    <option value="60">1 hora</option>
+                                    <option value="90">1:30h</option>
+                                    <option value="120">2 horas</option>
+                                </select>
+                            </div>
+                            <div style={formGroupStyle}>
+                                <label style={formLabelStyle}>📍 Local</label>
+                                <input type="text" value={eventData.location} onChange={e => setEventData({...eventData, location: e.target.value})} style={commonInputStyle} placeholder="Ex: Google Meet, Estúdio" />
+                            </div>
+                        </div>
+                        <div style={formGroupStyle}>
+                            <label style={formLabelStyle}>👥 Participantes (emails)</label>
+                            <input type="text" value={eventData.attendees} onChange={e => setEventData({...eventData, attendees: e.target.value})} style={commonInputStyle} placeholder="email1@exemplo.com, email2@exemplo.com" />
+                        </div>
+                    </>
+                );
+            case 'bulk':
+                 return (
+                    <>
+                        <div style={formGroupStyle}>
+                            <label style={formLabelStyle}>📋 Demandas Desestruturadas</label>
+                            <textarea value={bulkData.text} onChange={e => setBulkData({...bulkData, text: e.target.value})} style={{...commonInputStyle, minHeight: '150px', resize: 'vertical'}} placeholder="Cole aqui as suas demandas em qualquer formato..." required></textarea>
+                            <small style={{color: 'var(--text-tertiary)', fontSize: '0.8rem', marginTop: '8px', display: 'block'}}>
+                                💡 Dica: Cole as suas demandas em qualquer formato. A nossa IA irá organizá-las automaticamente.
+                            </small>
+                        </div>
+                    </>
+                );
+            default: return null;
+        }
+    }
+
+    return (
+        <div className="quick-modal active" style={{position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(13, 12, 34, 0.7)', backdropFilter: 'blur(8px)', zIndex: 2000, display: 'flex', alignItems: 'center', justifyContent: 'center', animation: 'fadeIn 0.3s ease'}}>
+            <div ref={modalRef} className="modal-content" style={{background: 'var(--card-bg-solid)', border: '1px solid var(--border-color)', borderRadius: '24px', width: '90%', maxWidth: '550px', maxHeight: '90vh', overflowY: 'auto', boxShadow: '0 20px 60px rgba(0, 0, 0, 0.5)', animation: 'slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1)', position: 'relative'}}>
+                <button onClick={onClose} className="modal-close" style={{position: 'absolute', top: '20px', right: '20px', background: 'rgba(255, 255, 255, 0.1)', border: 'none', width: '36px', height: '36px', borderRadius: '50%', fontSize: '18px', color: 'var(--text-secondary)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s ease'}}>✕</button>
+                <div className="modal-header" style={{padding: '32px 32px 0'}}>
+                    <h2 className="modal-title" style={{fontSize: '1.8rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '12px'}}>⚡ Quick Actions</h2>
                 </div>
-                
-                <div class="modal-tabs">
-                    <button class="tab-btn active" onclick="switchTab('task')">
-                        ✅ Nova Tarefa
-                    </button>
-                    <button class="tab-btn" onclick="switchTab('event')">
-                        📅 Novo Evento
-                    </button>
-                    <button class="tab-btn" onclick="switchTab('bulk')">
-                        📋 Demandas em Massa
-                    </button>
+                <div className="modal-tabs" style={{display: 'flex', gap: '8px', marginBottom: '24px', borderBottom: '1px solid var(--border-color)', padding: '0 32px'}}>
+                    <button className={`tab-btn ${activeTab === 'task' ? 'active' : ''}`} onClick={() => setActiveTab('task')} style={{flex: 1, padding: '14px 16px', border: 'none', borderBottom: `3px solid ${activeTab === 'task' ? 'var(--primary-purple)' : 'transparent'}`, background: 'transparent', color: activeTab === 'task' ? 'var(--primary-purple)' : 'var(--text-secondary)', borderRadius: 0, cursor: 'pointer', fontWeight: 600, transition: 'all 0.2s ease', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px'}}>✅ Nova Tarefa</button>
+                    <button className={`tab-btn ${activeTab === 'event' ? 'active' : ''}`} onClick={() => setActiveTab('event')} style={{flex: 1, padding: '14px 16px', border: 'none', borderBottom: `3px solid ${activeTab === 'event' ? 'var(--primary-purple)' : 'transparent'}`, background: 'transparent', color: activeTab === 'event' ? 'var(--primary-purple)' : 'var(--text-secondary)', borderRadius: 0, cursor: 'pointer', fontWeight: 600, transition: 'all 0.2s ease', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px'}}>📅 Novo Evento</button>
+                    <button className={`tab-btn ${activeTab === 'bulk' ? 'active' : ''}`} onClick={() => setActiveTab('bulk')} style={{flex: 1, padding: '14px 16px', border: 'none', borderBottom: `3px solid ${activeTab === 'bulk' ? 'var(--primary-purple)' : 'transparent'}`, background: 'transparent', color: activeTab === 'bulk' ? 'var(--primary-purple)' : 'var(--text-secondary)', borderRadius: 0, cursor: 'pointer', fontWeight: 600, transition: 'all 0.2s ease', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px'}}>📋 Em Massa</button>
                 </div>
-            </div>
-
-            <!-- Tab Nova Tarefa -->
-            <div class="tab-content active" id="taskTab">
-                <form id="taskForm" onsubmit="createQuickTask(event)">
-                    <div class="form-group">
-                        <label class="form-label">📝 Título da Tarefa</label>
-                        <input type="text" class="form-input" id="taskTitle" placeholder="Ex: Finalizar mix da música" required>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label">🏢 Setor</label>
-                            <select class="form-select" id="taskSetor" required>
-                                <option value="">Selecionar setor</option>
-                                <option value="Design">🎨 Design</option>
-                                <option value="Audiovisual">🎬 Audiovisual</option>
-                                <option value="Social Media">📱 Social Media</option>
-                                <option value="Gestão de Projetos">📊 Gestão de Projetos</option>
-                                <option value="Estúdio">🎵 Estúdio</option>
-                                <option value="Músico">🎤 Músico</option>
-                                <option value="Geral">📋 Geral</option>
-                            </select>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label class="form-label">⚡ Prioridade</label>
-                            <select class="form-select" id="taskPriority">
-                                <option value="normal">📌 Normal</option>
-                                <option value="high">🔥 Alta</option>
-                                <option value="urgent">🚨 Urgente</option>
-                                <option value="low">📋 Baixa</option>
-                            </select>
-                        </div>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label">📅 Data de Vencimento</label>
-                            <input type="date" class="form-input" id="taskDueDate">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label class="form-label">👤 Responsável</label>
-                            <input type="text" class="form-input" id="taskAssignee" placeholder="Nome do responsável">
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label">📄 Descrição</label>
-                        <textarea class="form-textarea" id="taskDescription" placeholder="Detalhes da tarefa..."></textarea>
-                    </div>
-                    
-                    <div class="form-actions">
-                        <button type="button" class="btn btn-secondary" onclick="closeQuickModal()">
-                            Cancelar
-                        </button>
-                        <button type="submit" class="btn btn-primary" id="taskSubmitBtn">
-                            ✅ Criar Tarefa
-                        </button>
-                    </div>
-                </form>
-            </div>
-
-            <!-- Tab Novo Evento -->
-            <div class="tab-content" id="eventTab">
-                <form id="eventForm" onsubmit="createQuickEvent(event)">
-                    <div class="form-group">
-                        <label class="form-label">📅 Título do Evento</label>
-                        <input type="text" class="form-input" id="eventTitle" placeholder="Ex: Reunião CNP" required>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label">📅 Data</label>
-                            <input type="date" class="form-input" id="eventDate" required>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label class="form-label">🕐 Horário</label>
-                            <input type="time" class="form-input" id="eventTime" required>
-                        </div>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label">⏱️ Duração (minutos)</label>
-                            <select class="form-select" id="eventDuration">
-                                <option value="30">30 min</option>
-                                <option value="60" selected>1 hora</option>
-                                <option value="90">1:30h</option>
-                                <option value="120">2 horas</option>
-                                <option value="180">3 horas</option>
-                                <option value="240">4 horas</option>
-                            </select>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label class="form-label">📍 Local</label>
-                            <input type="text" class="form-input" id="eventLocation" placeholder="Ex: Google Meet, Estúdio">
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label">👥 Participantes (emails)</label>
-                        <input type="text" class="form-input" id="eventAttendees" placeholder="email1@exemplo.com, email2@exemplo.com">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label">📄 Descrição</label>
-                        <textarea class="form-textarea" id="eventDescription" placeholder="Detalhes do evento..."></textarea>
-                    </div>
-                    
-                    <div class="form-actions">
-                        <button type="button" class="btn btn-secondary" onclick="closeQuickModal()">
-                            Cancelar
-                        </button>
-                        <button type="submit" class="btn btn-primary" id="eventSubmitBtn">
-                            📅 Criar Evento
-                        </button>
-                    </div>
-                </form>
-            </div>
-
-            <!-- Tab Demandas em Massa -->
-            <div class="tab-content" id="bulkTab">
-                <form id="bulkForm" onsubmit="createBulkTasks(event)">
-                    <div class="form-group">
-                        <label class="form-label">📋 Demandas Desestruturadas</label>
-                        <textarea 
-                            class="form-textarea" 
-                            id="bulkTasksText" 
-                            placeholder="Cole aqui suas demandas em qualquer formato. Exemplo:
-
-- Criar banner para Instagram
-- Editar vídeo da reunião
-- Revisar texto do blog
-- Agendar reunião com cliente X
-- Finalizar apresentação do projeto Y
-
-Ou qualquer outro formato de texto com suas tarefas..."
-                            required
-                            style="min-height: 200px; resize: vertical;">
-                        </textarea>
-                        <small style="color: var(--text-light); font-size: 0.8rem; margin-top: 8px; display: block;">
-                            💡 Dica: Cole suas demandas em qualquer formato. Nossa IA irá organizá-las automaticamente por setor, prioridade e responsável.
-                        </small>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label">🏢 Setor Padrão</label>
-                            <select class="form-select" id="bulkDefaultSetor">
-                                <option value="">Deixar IA decidir</option>
-                                <option value="Design">🎨 Design</option>
-                                <option value="Audiovisual">🎬 Audiovisual</option>
-                                <option value="Social Media">📱 Social Media</option>
-                                <option value="Gestão de Projetos">📊 Gestão de Projetos</option>
-                                <option value="Estúdio">🎵 Estúdio</option>
-                                <option value="Músico">🎤 Músico</option>
-                                <option value="Geral">📋 Geral</option>
-                            </select>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label class="form-label">⚡ Prioridade Padrão</label>
-                            <select class="form-select" id="bulkDefaultPriority">
-                                <option value="">Deixar IA decidir</option>
-                                <option value="low">📋 Baixa</option>
-                                <option value="normal">📌 Normal</option>
-                                <option value="high">🔥 Alta</option>
-                                <option value="urgent">🚨 Urgente</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">👤 Responsável Padrão</label>
-                        <input type="text" class="form-input" id="bulkDefaultAssignee" placeholder="Nome do responsável padrão (opcional)">
-                        <small style="color: var(--text-light); font-size: 0.8rem; margin-top: 4px; display: block;">
-                            Se deixar vazio, a IA tentará identificar responsáveis no texto
-                        </small>
-                    </div>
-                    
-                    <div class="form-actions">
-                        <button type="button" class="btn btn-secondary" onclick="closeQuickModal()">
-                            Cancelar
-                        </button>
-                        <button type="submit" class="btn btn-primary" id="bulkSubmitBtn">
-                            🤖 Processar com IA
+                <form onSubmit={handleFormSubmit} style={{padding: '24px 32px 32px'}}>
+                    {renderForm()}
+                    <div className="form-actions" style={{display: 'flex', gap: '12px', marginTop: '32px', paddingTop: '24px', borderTop: '1px solid var(--border-color)'}}>
+                        <button type="button" className="btn btn-secondary" onClick={onClose} style={{flex: 1, padding: '16px 20px', border: 'none', borderRadius: '12px', fontWeight: 700, fontSize: '1rem', cursor: 'pointer', transition: 'all 0.2s ease', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', background: 'rgba(255, 255, 255, 0.1)', color: 'var(--text-secondary)'}}>Cancelar</button>
+                        <button type="submit" className="btn btn-primary" disabled={isSubmitting} style={{flex: 1, padding: '16px 20px', border: 'none', borderRadius: '12px', fontWeight: 700, fontSize: '1rem', cursor: 'pointer', transition: 'all 0.2s ease', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', background: 'var(--primary-purple)', color: 'white', position: 'relative'}}>
+                            {isSubmitting && <span className="btn-loading"></span>}
+                            <span style={{visibility: isSubmitting ? 'hidden' : 'visible'}}>
+                                {activeTab === 'task' ? '✅ Criar Tarefa' : activeTab === 'event' ? '📅 Criar Evento' : '🤖 Enviar para IA'}
+                            </span>
                         </button>
                     </div>
                 </form>
             </div>
         </div>
-    </div>
+    );
+};
 
-    <div class="loading" id="loading">
-        <div class="spinner"></div>
-        <p>Sincronizando dados...</p>
-    </div>
 
-    <script>
-        // ===============================
-        // CONFIGURAÇÃO
-        // ===============================
-        const CONFIG = {
-            N8N_BASE_URL: 'https://n8n-x8go8cgk0g0c0wc4004wosoc.themodernservers.com',
-            ENDPOINTS: {
-                EVENTS: '/webhook/dashboard-events',
-                TASKS: '/webhook/clickup-tasks',
-                UNIFIED: '/webhook/dashboard-unified',
-                CREATE_TASK: '/webhook/dashboard-create-task',
-                CREATE_EVENT: '/webhook/dashboard-create-event',
-                CREATE_BULK_TASKS: '/webhook/dashboard-bulk-tasks',
-                UPDATE_TASK_STATUS: '/webhook/dashboard-update-task-status'
-            },
-            AUTO_SYNC: 300000
+const DecompositionModal = ({ task, onClose, showNotification, config, refreshData }) => {
+    const modalRef = useRef(null);
+    const [subTasks, setSubTasks] = useState([]);
+    const [selectedTasks, setSelectedTasks] = useState([]);
+    const [isGenerating, setIsGenerating] = useState(true);
+    const [isCreating, setIsCreating] = useState(false);
+    const [error, setError] = useState('');
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (modalRef.current && !modalRef.current.contains(event.target)) {
+                onClose();
+            }
         };
-
-        // ===============================
-        // ESTADO
-        // ===============================
-        let allEvents = [];
-        let allTasks = [];
-        let currentView = 'dashboard';
-        let currentPeriod = 'dia';
-        let lastSync = null;
-        let customPeriodActive = false;
-        let customStartDate = null;
-        let customEndDate = null;
+        document.addEventListener('mousedown', handleClickOutside);
         
-        let currentFilters = {
-            text: '',
-            setor: '',
-            date: ''
+        const generateSubTasks = async () => {
+            try {
+                const prompt = `Quebre a seguinte tarefa principal em 3 a 5 subtarefas acionáveis. A tarefa principal é: "${task.title}". A descrição é: "${task.description}". O setor é "${task.setor}". Responda com um array JSON de strings, onde cada string é uma subtarefa. Exemplo de formato: ["Subtarefa 1", "Subtarefa 2"]`;
+                const payload = {
+                    contents: [{ role: "user", parts: [{ text: prompt }] }],
+                    generationConfig: {
+                        responseMimeType: "application/json",
+                        responseSchema: { type: "ARRAY", items: { type: "STRING" } }
+                    }
+                };
+                const apiKey = "";
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const result = await response.json();
+                
+                if (result.candidates && result.candidates.length > 0) {
+                    const text = result.candidates[0].content.parts[0].text;
+                    const parsedSubtasks = JSON.parse(text);
+                    setSubTasks(parsedSubtasks);
+                    setSelectedTasks(parsedSubtasks); // Seleciona todas por padrão
+                } else {
+                    throw new Error("A API não retornou subtarefas.");
+                }
+            } catch (err) {
+                setError("Não foi possível gerar subtarefas. Tente novamente.");
+                showNotification(`Erro ao gerar subtarefas: ${err.message}`, "error");
+            } finally {
+                setIsGenerating(false);
+            }
         };
 
-        // ===============================
-        // INICIALIZAÇÃO
-        // ===============================
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('🎵 Dashboard MERACHI iniciado');
-            loadAllData();
-            setupAutoSync();
-            renderCalendar();
-            initQuickActions();
+        generateSubTasks();
+
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, [task, showNotification]);
+
+    const handleCheckboxChange = (taskTitle) => {
+        setSelectedTasks(prev => 
+            prev.includes(taskTitle) ? prev.filter(t => t !== taskTitle) : [...prev, taskTitle]
+        );
+    };
+
+    const handleCreateTasks = async () => {
+        if (selectedTasks.length === 0) {
+            showNotification("Nenhuma subtarefa selecionada.", "error");
+            return;
+        }
+        setIsCreating(true);
+        const creationPromises = selectedTasks.map(title => {
+            const payload = {
+                title: title,
+                setor: task.setor,
+                priority: task.priority,
+                description: `Subtarefa de: "${task.title}"`,
+                source: 'dashboard_decomposition',
+                created_at: new Date().toISOString()
+            };
+            return fetch(`${config.N8N_BASE_URL}${config.ENDPOINTS.CREATE_TASK}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
         });
 
-        // ===============================
-        // QUICK ACTIONS
-        // ===============================
-        
-        function initQuickActions() {
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('eventDate').value = today;
-            document.getElementById('taskDueDate').value = today;
-            
-            const now = new Date();
-            now.setHours(now.getHours() + 1);
-            const timeString = now.toTimeString().split(':').slice(0, 2).join(':');
-            document.getElementById('eventTime').value = timeString;
-            
-            console.log('🚀 Quick Actions inicializadas');
-        }
-
-        function toggleQuickModal() {
-            const modal = document.getElementById('quickModal');
-            const fab = document.getElementById('fabBtn');
-            
-            if (modal.classList.contains('active')) {
-                closeQuickModal();
-            } else {
-                modal.classList.add('active');
-                fab.classList.add('active');
-                fab.innerHTML = '✕';
-                
-                const activeTab = document.querySelector('.tab-content.active');
-                const firstInput = activeTab.querySelector('input, select, textarea');
-                if (firstInput) firstInput.focus();
+        try {
+            const results = await Promise.all(creationPromises);
+            const successCount = results.filter(res => res.ok).length;
+            if (successCount > 0) {
+                showNotification(`${successCount} subtarefa(s) criada(s) com sucesso!`, "success");
+                refreshData();
+                onClose();
             }
-        }
-
-        function closeQuickModal() {
-            const modal = document.getElementById('quickModal');
-            const fab = document.getElementById('fabBtn');
-            
-            modal.classList.remove('active');
-            fab.classList.remove('active');
-            fab.innerHTML = '➕';
-            
-            document.getElementById('taskForm').reset();
-            document.getElementById('eventForm').reset();
-            document.getElementById('bulkForm').reset();
-            
-            initQuickActions();
-        }
-
-        function closeModalOnBackdrop(event) {
-            if (event.target === event.currentTarget) {
-                closeQuickModal();
+            if (successCount < selectedTasks.length) {
+                showNotification(`${selectedTasks.length - successCount} falharam ao ser criadas.`, "error");
             }
+        } catch (err) {
+            showNotification("Erro ao criar subtarefas.", "error");
+        } finally {
+            setIsCreating(false);
         }
+    };
 
-        function switchTab(tabName) {
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            event.target.classList.add('active');
-            
-            document.querySelectorAll('.tab-content').forEach(content => {
-                content.classList.remove('active');
-            });
-            document.getElementById(`${tabName}Tab`).classList.add('active');
-            
-            const activeTab = document.querySelector('.tab-content.active');
-            const firstInput = activeTab.querySelector('input, select, textarea');
-            if (firstInput) firstInput.focus();
-        }
-
-        async function createQuickTask(event) {
-            event.preventDefault();
-            
-            const submitBtn = document.getElementById('taskSubmitBtn');
-            submitBtn.classList.add('btn-loading');
-            submitBtn.disabled = true;
-            
-            try {
-                const formData = {
-                    title: document.getElementById('taskTitle').value,
-                    setor: document.getElementById('taskSetor').value,
-                    priority: document.getElementById('taskPriority').value,
-                    due_date: document.getElementById('taskDueDate').value,
-                    assignee: document.getElementById('taskAssignee').value,
-                    description: document.getElementById('taskDescription').value,
-                    source: 'dashboard_quick_action',
-                    created_at: new Date().toISOString()
-                };
-                
-                console.log('🆕 Criando tarefa:', formData);
-                
-                const response = await fetch(`${CONFIG.N8N_BASE_URL}${CONFIG.ENDPOINTS.CREATE_TASK}`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(formData)
-                });
-                
-                const result = await response.json();
-                
-                if (result.success) {
-                    showNotification('✅ Tarefa criada com sucesso!', 'success');
-                    
-                    const newTask = {
-                        id: `temp-${Date.now()}`,
-                        title: formData.title,
-                        setor: formData.setor,
-                        status: 'open',
-                        priority: formData.priority,
-                        due_date: formData.due_date,
-                        assignees: formData.assignee ? [formData.assignee] : [],
-                        description: formData.description,
-                        start: new Date().toISOString()
-                    };
-                    
-                    allTasks.unshift(newTask);
-                    updateMetrics();
-                    renderCurrentView();
-                    
-                    closeQuickModal();
-                    
-                    setTimeout(() => {
-                        loadClickUpTasks();
-                    }, 2000);
-                    
-                } else {
-                    throw new Error(result.message || 'Erro ao criar tarefa');
-                }
-                
-            } catch (error) {
-                console.error('❌ Erro ao criar tarefa:', error);
-                showNotification('❌ Erro ao criar tarefa: ' + error.message, 'error');
-            } finally {
-                submitBtn.classList.remove('btn-loading');
-                submitBtn.disabled = false;
-            }
-        }
-
-        async function createQuickEvent(event) {
-            event.preventDefault();
-            
-            const submitBtn = document.getElementById('eventSubmitBtn');
-            submitBtn.classList.add('btn-loading');
-            submitBtn.disabled = true;
-            
-            try {
-                const date = document.getElementById('eventDate').value;
-                const time = document.getElementById('eventTime').value;
-                const duration = parseInt(document.getElementById('eventDuration').value);
-                
-                const startDateTime = new Date(`${date}T${time}`);
-                const endDateTime = new Date(startDateTime.getTime() + duration * 60000);
-                
-                const attendees = document.getElementById('eventAttendees').value
-                    .split(',')
-                    .map(email => email.trim())
-                    .filter(email => email.length > 0);
-                
-                const formData = {
-                    title: document.getElementById('eventTitle').value,
-                    description: document.getElementById('eventDescription').value,
-                    location: document.getElementById('eventLocation').value,
-                    start_datetime: startDateTime.toISOString(),
-                    end_datetime: endDateTime.toISOString(),
-                    attendees: attendees,
-                    source: 'dashboard_quick_action',
-                    created_at: new Date().toISOString()
-                };
-                
-                console.log('🆕 Criando evento:', formData);
-                
-                const response = await fetch(`${CONFIG.N8N_BASE_URL}${CONFIG.ENDPOINTS.CREATE_EVENT}`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(formData)
-                });
-                
-                const result = await response.json();
-                
-                if (result.success) {
-                    showNotification('📅 Evento criado com sucesso!', 'success');
-                    
-                    const newEvent = {
-                        id: `temp-${Date.now()}`,
-                        title: formData.title,
-                        description: formData.description,
-                        location: formData.location,
-                        start: formData.start_datetime,
-                        status: 'confirmed'
-                    };
-                    
-                    allEvents.unshift(newEvent);
-                    updateMetrics();
-                    renderCurrentView();
-                    
-                    closeQuickModal();
-                    
-                    setTimeout(() => {
-                        loadCalendarEvents();
-                    }, 2000);
-                    
-                } else {
-                    throw new Error(result.message || 'Erro ao criar evento');
-                }
-                
-            } catch (error) {
-                console.error('❌ Erro ao criar evento:', error);
-                showNotification('❌ Erro ao criar evento: ' + error.message, 'error');
-            } finally {
-                submitBtn.classList.remove('btn-loading');
-                submitBtn.disabled = false;
-            }
-        }
-
-        async function createBulkTasks(event) {
-            event.preventDefault();
-            
-            const submitBtn = document.getElementById('bulkSubmitBtn');
-            submitBtn.classList.add('btn-loading');
-            submitBtn.disabled = true;
-            
-            try {
-                const bulkText = document.getElementById('bulkTasksText').value;
-                
-                if (!bulkText.trim()) {
-                    throw new Error('Por favor, insira o texto com as demandas');
-                }
-                
-                const formData = {
-                    bulk_text: bulkText.trim(),
-                    default_setor: document.getElementById('bulkDefaultSetor').value,
-                    default_priority: document.getElementById('bulkDefaultPriority').value,
-                    default_assignee: document.getElementById('bulkDefaultAssignee').value,
-                    source: 'dashboard_bulk_action',
-                    created_at: new Date().toISOString()
-                };
-                
-                console.log('🤖 Enviando demandas em massa para IA:', formData);
-                
-                const response = await fetch(`${CONFIG.N8N_BASE_URL}${CONFIG.ENDPOINTS.CREATE_BULK_TASKS}`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(formData)
-                });
-                
-                const result = await response.json();
-                
-                if (result.success) {
-                    const tasksCreated = result.tasks_created || 0;
-                    showNotification(`🤖 IA processou com sucesso! ${tasksCreated} demandas criadas`, 'success');
-                    
-                    closeQuickModal();
-                    
-                    setTimeout(() => {
-                        loadClickUpTasks();
-                    }, 3000);
-                    
-                } else {
-                    throw new Error(result.message || 'Erro ao processar demandas com IA');
-                }
-                
-            } catch (error) {
-                console.error('❌ Erro ao processar demandas em massa:', error);
-                showNotification('❌ Erro ao processar: ' + error.message, 'error');
-            } finally {
-                submitBtn.classList.remove('btn-loading');
-                submitBtn.disabled = false;
-            }
-        }
-
-        // ===============================
-        // 🆕 ATUALIZAÇÃO DE STATUS COM DUPLO CLIQUE
-        // ===============================
-        
-        let lastClickTime = 0;
-        let lastClickedTaskId = null;
-
-        async function changeTaskStatus(event, taskId) {
-            event.stopPropagation();
-            
-            const currentTime = new Date().getTime();
-            const timeDiff = currentTime - lastClickTime;
-            
-            // Detectar duplo clique (menos de 500ms entre cliques)
-            if (timeDiff < 500 && lastClickedTaskId === taskId) {
-                // DUPLO CLIQUE - Resetar para 'open'
-                await resetTaskStatus(event, taskId);
-            } else {
-                // CLIQUE SIMPLES - Avançar status
-                await advanceTaskStatus(event, taskId);
-            }
-            
-            lastClickTime = currentTime;
-            lastClickedTaskId = taskId;
-        }
-
-        async function advanceTaskStatus(event, taskId) {
-            const currentTask = allTasks.find(t => t.id === taskId);
-            if (!currentTask) {
-                console.error('❌ Tarefa não encontrada:', taskId);
-                return;
-            }
-
-            const statusBadge = event.target;
-            const originalContent = statusBadge.innerHTML;
-            
-            // Adicionar estado de loading
-            statusBadge.classList.add('loading');
-            statusBadge.innerHTML = 'Atualizando...';
-            
-            const statuses = ['open', 'progress', 'review', 'complete'];
-            const currentIndex = statuses.indexOf(currentTask.status);
-            const nextStatus = statuses[(currentIndex + 1) % statuses.length];
-            
-            try {
-                console.log(`🔄 Alterando status da tarefa ${taskId} de ${currentTask.status} para ${nextStatus}`);
-                
-                // Chamar endpoint do n8n para atualizar no ClickUp
-                const response = await fetch(`${CONFIG.N8N_BASE_URL}${CONFIG.ENDPOINTS.UPDATE_TASK_STATUS}`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        task_id: taskId,
-                        current_status: currentTask.status,
-                        new_status: nextStatus,
-                        task_title: currentTask.title,
-                        updated_by: 'dashboard_user',
-                        updated_at: new Date().toISOString()
-                    })
-                });
-                
-                const result = await response.json();
-                
-                if (result.success) {
-                    // Atualizar status local
-                    currentTask.status = nextStatus;
-                    
-                    // Remover loading e atualizar visual
-                    statusBadge.classList.remove('loading');
-                    statusBadge.className = `status-badge status-${nextStatus}`;
-                    statusBadge.innerHTML = getTaskStatusLabel(nextStatus);
-                    
-                    showNotification(`✅ Status alterado para ${getTaskStatusLabel(nextStatus)}`, 'success');
-                    
-                    // Re-renderizar se necessário
-                    setTimeout(() => {
-                        renderCurrentView();
-                    }, 300);
-                    
-                    console.log('✅ Status atualizado com sucesso no ClickUp');
-                } else {
-                    throw new Error(result.message || 'Erro ao atualizar status no ClickUp');
-                }
-                
-            } catch (error) {
-                console.error('❌ Erro ao atualizar status:', error);
-                
-                // Reverter loading em caso de erro
-                statusBadge.classList.remove('loading');
-                statusBadge.innerHTML = originalContent;
-                
-                showNotification('❌ Erro ao atualizar status: ' + error.message, 'error');
-            }
-        }
-
-        async function resetTaskStatus(event, taskId) {
-            const currentTask = allTasks.find(t => t.id === taskId);
-            if (!currentTask) {
-                console.error('❌ Tarefa não encontrada:', taskId);
-                return;
-            }
-
-            // Se já está em 'open', não faz nada
-            if (currentTask.status === 'open') {
-                showNotification('ℹ️ Tarefa já está em status "Aberta"', 'info');
-                return;
-            }
-
-            const statusBadge = event.target;
-            const originalContent = statusBadge.innerHTML;
-            
-            // Estado de loading
-            statusBadge.classList.add('loading');
-            statusBadge.innerHTML = 'Resetando...';
-            
-            try {
-                console.log(`🧹 Resetando status da tarefa ${taskId} de ${currentTask.status} para 'open' (duplo clique)`);
-                
-                // Preparar dados para envio
-                const requestData = {
-                    task_id: taskId,
-                    current_status: currentTask.status,
-                    new_status: 'open',
-                    task_title: currentTask.title,
-                    updated_by: 'dashboard_user_reset',
-                    updated_at: new Date().toISOString()
-                };
-                
-                const response = await fetch(`${CONFIG.N8N_BASE_URL}${CONFIG.ENDPOINTS.UPDATE_TASK_STATUS}`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    },
-                    body: JSON.stringify(requestData)
-                });
-                
-                const result = await response.json();
-                
-                if (result.success) {
-                    // Atualizar status local
-                    const oldStatus = currentTask.status;
-                    currentTask.status = 'open';
-                    
-                    // Atualizar visual
-                    statusBadge.classList.remove('loading');
-                    statusBadge.className = 'status-badge status-open';
-                    statusBadge.innerHTML = getTaskStatusLabel('open');
-                    
-                    // Feedback de sucesso
-                    showNotification(`🧹 Status resetado: ${getTaskStatusLabel(oldStatus)} → ${getTaskStatusLabel('open')}`, 'success');
-                    
-                    // Re-renderizar
-                    setTimeout(() => {
-                        renderCurrentView();
-                    }, 300);
-                    
-                } else {
-                    throw new Error(result.message || result.error || 'Erro ao resetar status');
-                }
-                
-            } catch (error) {
-                console.error('❌ Erro ao resetar status:', error);
-                
-                // Restaurar estado
-                statusBadge.classList.remove('loading');
-                statusBadge.innerHTML = originalContent;
-                
-                showNotification(`❌ Erro ao resetar: ${error.message}`, 'error');
-            }
-        }
-
-        // Função separada para reset com botão de borracha
-        async function resetTaskStatusButton(event, taskId) {
-            event.stopPropagation();
-            
-            const currentTask = allTasks.find(t => t.id === taskId);
-            if (!currentTask) {
-                console.error('❌ Tarefa não encontrada:', taskId);
-                return;
-            }
-
-            if (currentTask.status === 'open') {
-                showNotification('ℹ️ Tarefa já está em status "Aberta"', 'info');
-                return;
-            }
-
-            const resetBtn = event.target.closest('.reset-btn');
-            const originalContent = resetBtn.innerHTML;
-            
-            // Estado de loading
-            resetBtn.innerHTML = '⏳';
-            resetBtn.style.pointerEvents = 'none';
-            resetBtn.style.opacity = '0.6';
-            
-            try {
-                console.log(`🧹 Resetando status da tarefa ${taskId} de ${currentTask.status} para 'open' (botão)`);
-                
-                const requestData = {
-                    task_id: taskId,
-                    current_status: currentTask.status,
-                    new_status: 'open',
-                    task_title: currentTask.title,
-                    updated_by: 'dashboard_user_reset_button',
-                    updated_at: new Date().toISOString()
-                };
-                
-                const response = await fetch(`${CONFIG.N8N_BASE_URL}${CONFIG.ENDPOINTS.UPDATE_TASK_STATUS}`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    },
-                    body: JSON.stringify(requestData)
-                });
-                
-                const result = await response.json();
-                
-                if (result.success) {
-                    const oldStatus = currentTask.status;
-                    currentTask.status = 'open';
-                    
-                    showNotification(`🧹 Status resetado: ${getTaskStatusLabel(oldStatus)} → ${getTaskStatusLabel('open')}`, 'success');
-                    
-                    setTimeout(() => {
-                        renderCurrentView();
-                    }, 300);
-                    
-                } else {
-                    throw new Error(result.message || 'Erro ao resetar status');
-                }
-                
-            } catch (error) {
-                console.error('❌ Erro ao resetar status:', error);
-                showNotification(`❌ Erro ao resetar: ${error.message}`, 'error');
-            } finally {
-                // Restaurar botão
-                resetBtn.innerHTML = originalContent;
-                resetBtn.style.pointerEvents = 'auto';
-                resetBtn.style.opacity = '0.7';
-            }
-        }
-
-        // ===============================
-        // FILTROS AVANÇADOS
-        // ===============================
-        
-        function toggleAdvancedFilters() {
-            const filtersDiv = document.getElementById('advancedFilters');
-            const isVisible = filtersDiv.style.display !== 'none';
-            
-            filtersDiv.style.display = isVisible ? 'none' : 'block';
-            
-            if (!isVisible) {
-                populateSetorFilter();
-                showNotification('🔍 Filtros avançados ativados', 'info');
-            }
-        }
-
-        function populateSetorFilter() {
-            const setorSelect = document.getElementById('filterSetor');
-            const setores = [...new Set(allTasks.map(task => task.setor || 'Geral'))].sort();
-            
-            setorSelect.innerHTML = '<option value="">Todos os setores</option>';
-            setores.forEach(setor => {
-                setorSelect.innerHTML += `<option value="${setor}">${setor}</option>`;
-            });
-        }
-
-        function applyFilters() {
-            currentFilters.text = document.getElementById('filterText').value.toLowerCase();
-            currentFilters.setor = document.getElementById('filterSetor').value;
-            currentFilters.date = document.getElementById('filterDate').value;
-            
-            renderCurrentView();
-            
-            const filteredEvents = getFilteredEvents();
-            const filteredTasks = getFilteredTasks();
-            document.getElementById('todayEvents').textContent = filteredEvents.length + filteredTasks.length;
-        }
-
-        function clearAllFilters() {
-            document.getElementById('filterText').value = '';
-            document.getElementById('filterSetor').value = '';
-            document.getElementById('filterDate').value = '';
-            
-            currentFilters = { text: '', setor: '', date: '' };
-            
-            renderCurrentView();
-            updateMetrics();
-            
-            showNotification('🧹 Filtros limpos', 'info');
-        }
-
-        // ===============================
-        // FILTRO DE PERÍODO CUSTOMIZADO
-        // ===============================
-        
-        function toggleCustomPeriod() {
-            const dropdown = document.getElementById('customPeriodDropdown');
-            const isOpen = dropdown.classList.contains('open');
-            
-            document.getElementById('navOptions').classList.remove('open');
-            document.getElementById('currentNav').classList.remove('open');
-            
-            if (isOpen) {
-                dropdown.classList.remove('open');
-            } else {
-                dropdown.classList.add('open');
-                
-                if (!document.getElementById('customStartDate').value) {
-                    const today = new Date().toISOString().split('T')[0];
-                    document.getElementById('customStartDate').value = today;
-                    document.getElementById('customEndDate').value = today;
-                }
-                
-                setTimeout(() => {
-                    document.addEventListener('click', closeCustomPeriodOnClickOutside);
-                }, 0);
-            }
-        }
-
-        function closeCustomPeriodOnClickOutside(event) {
-            const dropdown = document.querySelector('.custom-period-dropdown');
-            if (!dropdown.contains(event.target)) {
-                document.getElementById('customPeriodDropdown').classList.remove('open');
-                document.removeEventListener('click', closeCustomPeriodOnClickOutside);
-            }
-        }
-
-        function applyCustomPeriod() {
-            const startDate = document.getElementById('customStartDate').value;
-            const endDate = document.getElementById('customEndDate').value;
-            
-            if (!startDate || !endDate) {
-                showNotification('⚠️ Selecione as datas inicial e final', 'error');
-                return;
-            }
-            
-            if (new Date(startDate) > new Date(endDate)) {
-                showNotification('⚠️ A data inicial deve ser anterior à data final', 'error');
-                return;
-            }
-            
-            document.querySelectorAll('.period-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            
-            customPeriodActive = true;
-            customStartDate = new Date(startDate);
-            customEndDate = new Date(endDate);
-            customEndDate.setHours(23, 59, 59, 999);
-            
-            currentPeriod = 'custom';
-            
-            const start = customStartDate.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
-            const end = customEndDate.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
-            document.getElementById('periodLabel').textContent = `${start} - ${end}`;
-            
-            document.getElementById('customPeriodDropdown').classList.remove('open');
-            document.removeEventListener('click', closeCustomPeriodOnClickOutside);
-            
-            updateMetrics();
-            renderCurrentView();
-            
-            showNotification(`📆 Período: ${start} até ${end}`, 'info');
-        }
-
-        // ===============================
-        // NAVEGAÇÃO SUSPENSA
-        // ===============================
-        function toggleNavMenu() {
-            const options = document.getElementById('navOptions');
-            const current = document.getElementById('currentNav');
-            
-            // Fechar outros dropdowns
-            document.getElementById('customPeriodDropdown').classList.remove('open');
-            
-            options.classList.toggle('open');
-            current.classList.toggle('open');
-            
-            if (options.classList.contains('open')) {
-                setTimeout(() => {
-                    document.addEventListener('click', closeNavOnClickOutside);
-                }, 0);
-            } else {
-                document.removeEventListener('click', closeNavOnClickOutside);
-            }
-        }
-
-        function closeNavOnClickOutside(event) {
-            const navMenu = document.querySelector('.nav-menu');
-            if (!navMenu.contains(event.target)) {
-                document.getElementById('navOptions').classList.remove('open');
-                document.getElementById('currentNav').classList.remove('open');
-                document.removeEventListener('click', closeNavOnClickOutside);
-            }
-        }
-
-        function selectView(viewName, displayName) {
-            document.getElementById('currentNav').innerHTML = displayName + ' <span style="font-size: 0.8rem;">▼</span>';
-            
-            document.getElementById('navOptions').classList.remove('open');
-            document.getElementById('currentNav').classList.remove('open');
-            document.removeEventListener('click', closeNavOnClickOutside);
-            
-            showView(viewName);
-        }
-
-        // ===============================
-        // NAVEGAÇÃO
-        // ===============================
-        function showView(viewName) {
-            // CORREÇÃO: Fechar Quick Actions ao trocar de view
-            const modal = document.getElementById('quickModal');
-            if (modal && modal.classList.contains('active')) {
-                closeQuickModal();
-            }
-            
-            document.querySelectorAll('.content-view').forEach(view => {
-                view.classList.remove('active');
-            });
-            document.getElementById(`${viewName}-view`).classList.add('active');
-
-            currentView = viewName;
-
-            switch(viewName) {
-                case 'agenda':
-                    renderAgendaEvents();
-                    break;
-                case 'demandas':
-                    renderDemandasTasks();
-                    break;
-                case 'calendario':
-                    renderCalendar();
-                    break;
-                default:
-                    renderCalendarEvents();
-                    renderClickUpTasks();
-            }
-        }
-
-        function setPeriod(period) {
-            document.querySelectorAll('.period-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            event.target.classList.add('active');
-
-            currentPeriod = period;
-            customPeriodActive = false;
-
-            const labels = {
-                'dia': 'Hoje',
-                'semana': 'Esta Semana',
-                'mes': 'Este Mês'
-            };
-            document.getElementById('periodLabel').textContent = labels[period];
-
-            updateMetrics();
-            renderCurrentView();
-        }
-
-        function renderCurrentView() {
-            switch(currentView) {
-                case 'dashboard':
-                    renderCalendarEvents();
-                    renderClickUpTasks();
-                    break;
-                case 'agenda':
-                    renderAgendaEvents();
-                    break;
-                case 'demandas':
-                    renderDemandasTasks();
-                    break;
-                case 'calendario':
-                    renderCalendar();
-                    break;
-            }
-        }
-
-        // ===============================
-        // CARREGAMENTO DE DADOS
-        // ===============================
-        async function loadAllData() {
-            showLoading(true);
-            try {
-                await Promise.all([loadCalendarEvents(), loadClickUpTasks()]);
-                updateMetrics();
-                renderCurrentView();
-                lastSync = new Date();
-                showNotification('Dados sincronizados! 🦋', 'success');
-            } catch (error) {
-                console.error('Erro ao carregar dados:', error);
-                loadMockData();
-                showNotification('Usando dados offline', 'info');
-            } finally {
-                showLoading(false);
-            }
-        }
-
-        async function loadCalendarEvents() {
-            try {
-                const response = await fetch(`${CONFIG.N8N_BASE_URL}${CONFIG.ENDPOINTS.EVENTS}`);
-                const data = await response.json();
-                allEvents = data.success ? data.events || [] : [];
-                console.log(`📅 ${allEvents.length} eventos carregados`);
-            } catch (error) {
-                console.error('Erro ao carregar eventos:', error);
-                allEvents = generateMockEvents();
-            }
-        }
-
-        async function loadClickUpTasks() {
-            try {
-                const response = await fetch(`${CONFIG.N8N_BASE_URL}${CONFIG.ENDPOINTS.TASKS}`);
-                const data = await response.json();
-                
-                console.log('🔍 Resposta raw do ClickUp:', data);
-                
-                if (data.success && data.tasks && Array.isArray(data.tasks)) {
-                    allTasks = data.tasks.map(task => ({
-                        id: task.id || `task-${Date.now()}`,
-                        title: task.title || task.name || 'Demanda sem nome',
-                        description: task.description || '',
-                        setor: task.setor || task.sector || 'Geral',
-                        categoria: task.categoria || 'geral',
-                        status: task.status || 'open',
-                        assignees: task.assignees || [],
-                        due_date: task.due_date,
-                        start: task.start || new Date().toISOString(),
-                        url: task.url,
-                        priority: task.priority || 'normal'
-                    }));
-                    
-                    console.log(`✅ ${allTasks.length} demandas processadas`);
-                    console.log('📋 Primeira tarefa:', allTasks[0]);
-                    
-                    const setoresEncontrados = [...new Set(allTasks.map(t => t.setor))].sort();
-                    console.log('🏢 Setores encontrados:', setoresEncontrados);
-                    
-                } else {
-                    console.warn('⚠️ Estrutura inválida do ClickUp:', data);
-                    allTasks = generateMockTasks();
-                }
-            } catch (error) {
-                console.error('❌ Erro ao carregar ClickUp:', error);
-                allTasks = generateMockTasks();
-            }
-        }
-
-        function loadMockData() {
-            allEvents = generateMockEvents();
-            allTasks = generateMockTasks();
-            updateMetrics();
-            renderCurrentView();
-        }
-
-        function generateMockEvents() {
-            const now = new Date();
-            return [
-                {
-                    id: '1',
-                    title: 'Reunião CNP',
-                    description: 'Discussão sobre lançamento',
-                    start: new Date(now.getTime() + 2 * 60 * 60 * 1000).toISOString(),
-                    status: 'confirmed',
-                    location: 'Google Meet'
-                },
-                {
-                    id: '2',
-                    title: 'Gravação Tipo Borboleta',
-                    description: 'Videoclipe da música',
-                    start: new Date(now.getTime() + 6 * 60 * 60 * 1000).toISOString(),
-                    status: 'confirmed',
-                    location: 'Estúdio Vila Velha'
-                },
-                {
-                    id: '3',
-                    title: 'Palestra Confia no Processo',
-                    description: 'Evento corporativo',
-                    start: new Date(now.getTime() + 24 * 60 * 60 * 1000).toISOString(),
-                    status: 'tentative',
-                    location: 'Auditório'
-                }
-            ];
-        }
-
-        function generateMockTasks() {
-            return [
-                {
-                    id: '1',
-                    title: 'Finalizar mix da música',
-                    description: 'Ajustes na mixagem',
-                    setor: 'Produção Musical',
-                    categoria: 'producao',
-                    status: 'progress',
-                    assignees: ['João'],
-                    start: new Date().toISOString()
-                },
-                {
-                    id: '2',
-                    title: 'Criar arte da capa',
-                    description: 'Design para lançamento',
-                    setor: 'Design',
-                    categoria: 'design',
-                    status: 'open',
-                    assignees: ['Maria'],
-                    start: new Date().toISOString()
-                },
-                {
-                    id: '3',
-                    title: 'Revisar capítulo do livro',
-                    description: 'Capítulo sobre metamorfose',
-                    setor: 'Livro',
-                    categoria: 'livro',
-                    status: 'progress',
-                    assignees: ['Merachi'],
-                    start: new Date().toISOString()
-                },
-                {
-                    id: '4',
-                    title: 'Planejar evento de lançamento',
-                    description: 'Organizar show de lançamento',
-                    setor: 'Eventos',
-                    categoria: 'evento',
-                    status: 'open',
-                    assignees: ['Equipe'],
-                    start: new Date().toISOString()
-                },
-                {
-                    id: '5',
-                    title: 'Análise financeira do projeto',
-                    description: 'Revisar orçamento e custos',
-                    setor: 'Gestão',
-                    categoria: 'gestao',
-                    status: 'open',
-                    assignees: ['Financeiro'],
-                    start: new Date().toISOString()
-                }
-            ];
-        }
-
-        // ===============================
-        // FILTROS DE PERÍODO
-        // ===============================
-        function getFilteredEvents() {
-            let filtered = filterByPeriod(allEvents);
-            return applyAdvancedFilters(filtered, 'event');
-        }
-
-        function getFilteredTasks() {
-            let filtered = filterByPeriod(allTasks);
-            return applyAdvancedFilters(filtered, 'task');
-        }
-
-        function applyAdvancedFilters(items, type) {
-            let filtered = [...items];
-            
-            if (currentFilters.text) {
-                filtered = filtered.filter(item => 
-                    item.title.toLowerCase().includes(currentFilters.text) ||
-                    (item.description && item.description.toLowerCase().includes(currentFilters.text))
-                );
-            }
-            
-            if (currentFilters.setor && type === 'task') {
-                filtered = filtered.filter(item => item.setor === currentFilters.setor);
-            }
-            
-            if (currentFilters.date) {
-                const filterDate = new Date(currentFilters.date).toDateString();
-                filtered = filtered.filter(item => {
-                    const itemDate = new Date(item.start || item.due_date).toDateString();
-                    return itemDate === filterDate;
-                });
-            }
-            
-            return filtered;
-        }
-
-        function filterByPeriod(items) {
-            const now = new Date();
-            let startDate, endDate;
-
-            if (customPeriodActive && currentPeriod === 'custom') {
-                startDate = customStartDate;
-                endDate = customEndDate;
-            } else {
-                switch(currentPeriod) {
-                    case 'dia':
-                        startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-                        endDate = new Date(startDate.getTime() + 24 * 60 * 60 * 1000);
-                        break;
-                    case 'semana':
-                        const weekStart = new Date(now);
-                        weekStart.setDate(now.getDate() - now.getDay());
-                        weekStart.setHours(0, 0, 0, 0);
-                        startDate = weekStart;
-                        endDate = new Date(weekStart.getTime() + 7 * 24 * 60 * 60 * 1000);
-                        break;
-                    case 'mes':
-                        startDate = new Date(now.getFullYear(), now.getMonth(), 1);
-                        endDate = new Date(now.getFullYear(), now.getMonth() + 1, 1);
-                        break;
-                    default:
-                        return items;
-                }
-            }
-
-            return items.filter(item => {
-                const itemDate = new Date(item.start);
-                return itemDate >= startDate && itemDate < endDate;
-            });
-        }
-
-        // ===============================
-        // MÉTRICAS
-        // ===============================
-        function updateMetrics() {
-            const filteredEvents = getFilteredEvents();
-            const filteredTasks = getFilteredTasks();
-            const totalFiltered = filteredEvents.length + filteredTasks.length;
-
-            document.getElementById('totalEvents').textContent = allEvents.length + allTasks.length;
-            document.getElementById('todayEvents').textContent = totalFiltered;
-        }
-
-        // ===============================
-        // RENDERIZAÇÃO
-        // ===============================
-        function renderCalendarEvents() {
-            const container = document.getElementById('calendarEvents');
-            const events = getFilteredEvents();
-            
-            if (events.length === 0) {
-                container.innerHTML = '<div class="empty-state">Nenhum evento encontrado</div>';
-                return;
-            }
-
-            const html = events.map(event => createEventHTML(event)).join('');
-            container.innerHTML = html;
-        }
-
-        function renderAgendaEvents() {
-            const container = document.getElementById('agendaEvents');
-            const events = getFilteredEvents();
-            
-            if (events.length === 0) {
-                container.innerHTML = '<div class="empty-state">Nenhum evento encontrado</div>';
-                return;
-            }
-
-            const html = events.map(event => createEventHTML(event)).join('');
-            container.innerHTML = html;
-        }
-
-        function renderClickUpTasks() {
-            const container = document.getElementById('clickupTasks');
-            const tasks = getFilteredTasks();
-            
-            if (tasks.length === 0) {
-                container.innerHTML = '<div class="empty-state">Nenhuma demanda encontrada</div>';
-                return;
-            }
-
-            const html = renderTasksBySector(tasks);
-            container.innerHTML = html;
-        }
-
-        function renderDemandasTasks() {
-            const container = document.getElementById('demandasTasks');
-            const tasks = getFilteredTasks();
-            
-            if (tasks.length === 0) {
-                container.innerHTML = '<div class="empty-state">Nenhuma demanda encontrada</div>';
-                return;
-            }
-
-            const html = renderTasksBySector(tasks);
-            container.innerHTML = html;
-        }
-
-        function renderTasksBySector(tasks) {
-            const tasksPorSetor = {};
-            
-            tasks.forEach(task => {
-                const setor = task.setor || task.sector || 'Geral';
-                
-                if (!tasksPorSetor[setor]) {
-                    tasksPorSetor[setor] = [];
-                }
-                tasksPorSetor[setor].push(task);
-            });
-
-            const setoresOrdenados = Object.keys(tasksPorSetor).sort((a, b) => {
-                const ordem = ['Design', 'Audiovisual', 'Social Media', 'Gestão de Projetos', 'Estúdio', 'Músico', 'Geral'];
-                const indexA = ordem.indexOf(a);
-                const indexB = ordem.indexOf(b);
-                
-                if (indexA !== -1 && indexB !== -1) return indexA - indexB;
-                if (indexA !== -1) return -1;
-                if (indexB !== -1) return 1;
-                return a.localeCompare(b);
-            });
-
-            console.log('🏢 Setores processados:', setoresOrdenados);
-            console.log('📊 Tasks por setor:', Object.fromEntries(
-                setoresOrdenados.map(setor => [setor, tasksPorSetor[setor].length])
-            ));
-
-            let html = '';
-            setoresOrdenados.forEach(setor => {
-                const sectorTasks = tasksPorSetor[setor];
-                if (sectorTasks.length > 0) {
-                    html += `
-                        <div class="sector-section">
-                            <div class="sector-title">
-                                ${getSectorIcon(setor)} ${setor}
-                                <span class="sector-count">${sectorTasks.length}</span>
+    return (
+        <div className="quick-modal active" style={{position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(13, 12, 34, 0.7)', backdropFilter: 'blur(8px)', zIndex: 2000, display: 'flex', alignItems: 'center', justifyContent: 'center', animation: 'fadeIn 0.3s ease'}}>
+            <div ref={modalRef} className="modal-content" style={{background: 'var(--card-bg-solid)', border: '1px solid var(--border-color)', borderRadius: '24px', width: '90%', maxWidth: '550px', maxHeight: '90vh', overflowY: 'auto', boxShadow: '0 20px 60px rgba(0, 0, 0, 0.5)', animation: 'slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1)', position: 'relative'}}>
+                <button onClick={onClose} className="modal-close" style={{position: 'absolute', top: '20px', right: '20px', background: 'rgba(255, 255, 255, 0.1)', border: 'none', width: '36px', height: '36px', borderRadius: '50%', fontSize: '18px', color: 'var(--text-secondary)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s ease'}}>✕</button>
+                <div className="modal-header" style={{padding: '32px 32px 24px'}}>
+                    <h2 className="modal-title" style={{fontSize: '1.5rem', fontWeight: 700, color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '12px'}}>✨ Decompor Tarefa</h2>
+                    <p style={{color: 'var(--text-secondary)'}}>Tarefa principal: <strong style={{color: 'var(--primary-purple-light)'}}>{task.title}</strong></p>
+                </div>
+                <div style={{padding: '0 32px 32px'}}>
+                    {isGenerating ? <LoadingIndicator show={true} /> : error ? <p style={{color: '#F87171'}}>{error}</p> : (
+                        <div>
+                            <p style={{color: 'var(--text-secondary)', marginBottom: '16px'}}>A IA sugeriu as seguintes subtarefas. Selecione quais deseja criar:</p>
+                            <div style={{display: 'flex', flexDirection: 'column', gap: '12px'}}>
+                                {subTasks.map((sub, index) => (
+                                    <label key={index} style={{display: 'flex', alignItems: 'center', gap: '12px', background: 'rgba(255, 255, 255, 0.05)', padding: '12px', borderRadius: '8px'}}>
+                                        <input type="checkbox" checked={selectedTasks.includes(sub)} onChange={() => handleCheckboxChange(sub)} style={{width: '18px', height: '18px'}} />
+                                        <span>{sub}</span>
+                                    </label>
+                                ))}
                             </div>
-                            ${sectorTasks.map(task => createTaskHTML(task)).join('')}
                         </div>
-                    `;
-                }
-            });
-
-            return html || '<div class="empty-state">Nenhuma demanda encontrada</div>';
-        }
-
-        function getSectorIcon(setor) {
-            const icons = {
-                'Design': '🎨',
-                'Audiovisual': '🎬',
-                'Social Media': '📱',
-                'Gestão de Projetos': '📊',
-                'Estúdio': '🎵',
-                'Estúdio ': '🎵',
-                'Músico': '🎤',
-                'Geral': '📋'
-            };
-            return icons[setor] || icons[setor.trim()] || '📋';
-        }
-
-        function createEventHTML(event) {
-            const date = new Date(event.start);
-            const timeStr = date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-            const dateStr = date.toLocaleDateString('pt-BR');
-            
-            return `
-                <div class="item" onclick="openEvent('${event.id}')">
-                    <div class="item-title">${event.title}</div>
-                    <div class="item-meta">
-                        <span>🕐 ${timeStr} - ${dateStr}</span>
-                        ${event.location ? `<span>📍 ${event.location}</span>` : ''}
-                        <span class="status-badge status-${event.status}" onclick="changeEventStatus(event, '${event.id}')">${getStatusLabel(event.status)}</span>
+                    )}
+                    <div className="form-actions" style={{display: 'flex', gap: '12px', marginTop: '32px', paddingTop: '24px', borderTop: '1px solid var(--border-color)'}}>
+                        <button type="button" className="btn btn-secondary" onClick={onClose} style={{flex: 1, padding: '16px 20px', border: 'none', borderRadius: '12px', fontWeight: 700, fontSize: '1rem', cursor: 'pointer', transition: 'all 0.2s ease', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', background: 'rgba(255, 255, 255, 0.1)', color: 'var(--text-secondary)'}}>Cancelar</button>
+                        <button type="button" onClick={handleCreateTasks} className="btn btn-primary" disabled={isCreating || isGenerating || selectedTasks.length === 0} style={{flex: 1, padding: '16px 20px', border: 'none', borderRadius: '12px', fontWeight: 700, fontSize: '1rem', cursor: 'pointer', transition: 'all 0.2s ease', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', background: 'var(--primary-purple)', color: 'white', position: 'relative'}}>
+                            {isCreating && <span className="btn-loading"></span>}
+                            <span style={{visibility: isCreating ? 'hidden' : 'visible'}}>
+                                ✅ Criar Selecionadas ({selectedTasks.length})
+                            </span>
+                        </button>
                     </div>
                 </div>
-            `;
-        }
+            </div>
+        </div>
+    );
+};
 
-        function createTaskHTML(task) {
-            let dueDateHTML = '';
-            if (task.due_date || task.dueDate) {
-                const dueDate = new Date(task.due_date || task.dueDate);
-                const now = new Date();
-                const isOverdue = dueDate < now;
-                const isToday = dueDate.toDateString() === now.toDateString();
-                const isTomorrow = dueDate.toDateString() === new Date(now.getTime() + 24 * 60 * 60 * 1000).toDateString();
-                
-                let dueDateText = dueDate.toLocaleDateString('pt-BR', { 
-                    day: '2-digit', 
-                    month: '2-digit',
-                    year: '2-digit'
-                });
-                
-                let dueDateClass = '';
-                let dueDateIcon = '📅';
-                
-                if (isOverdue) {
-                    dueDateClass = 'style="color: #DC2626; font-weight: 600;"';
-                    dueDateIcon = '🔴';
-                    dueDateText = `${dueDateText} (Vencida)`;
-                } else if (isToday) {
-                    dueDateClass = 'style="color: #D97706; font-weight: 600;"';
-                    dueDateIcon = '⚡';
-                    dueDateText = `${dueDateText} (Hoje)`;
-                } else if (isTomorrow) {
-                    dueDateClass = 'style="color: #059669; font-weight: 600;"';
-                    dueDateIcon = '📍';
-                    dueDateText = `${dueDateText} (Amanhã)`;
-                }
-                
-                dueDateHTML = `<span ${dueDateClass}>${dueDateIcon} ${dueDateText}</span>`;
-            }
 
-            let descriptionHTML = '';
-            if (task.description && task.description.trim()) {
-                const maxLength = 120;
-                let description = task.description.trim();
-                if (description.length > maxLength) {
-                    description = description.substring(0, maxLength) + '...';
-                }
-                descriptionHTML = `<div style="font-size: 0.8rem; color: var(--text-light); margin-top: 6px; line-height: 1.4;">${description}</div>`;
-            }
+const LoadingIndicator = ({ show }) => {
+    if (!show) return null;
+    return (
+        <div className="loading" style={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: '40px', color: 'white', position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', background: 'rgba(22, 22, 26, 0.9)', border: '1px solid var(--border-color)', borderRadius: 'var(--border-radius)', backdropFilter: 'blur(var(--backdrop-blur))', zIndex: 10000}}>
+            <div className="spinner" style={{width: '40px', height: '40px', border: '4px solid rgba(127, 90, 240, 0.3)', borderTop: '4px solid var(--primary-purple)', borderRadius: '50%', animation: 'spin 1s linear infinite', margin: '0 auto 20px'}}></div>
+            <p>A sincronizar...</p>
+        </div>
+    );
+};
 
-            // Mostrar borracha apenas se NÃO estiver em 'open'
-            const showResetBtn = task.status !== 'open';
-
-            return `
-                <div class="item">
-                    <div class="item-title">${task.title}</div>
-                    <div class="item-meta">
-                        ${task.assignees?.length ? `<span>👤 ${task.assignees.join(', ')}</span>` : ''}
-                        ${dueDateHTML}
-                        <span class="status-badge status-${task.status}" 
-                              onclick="changeTaskStatus(event, '${task.id}')"
-                              title="👆 Clique: Avançar status | 👆👆 Duplo clique: Resetar para 'Aberta'"
-                              style="cursor: pointer;">
-                            ${getTaskStatusLabel(task.status)}
-                        </span>
-                        ${showResetBtn ? `
-                            <button class="reset-btn" 
-                                    onclick="resetTaskStatusButton(event, '${task.id}')" 
-                                    title="🧹 Resetar para 'Aberta'">
-                                🧹
-                            </button>
-                        ` : ''}
-                        ${task.url ? `<span style="font-size: 0.7rem;">🔗 <a href="${task.url}" target="_blank" style="color: inherit; text-decoration: none;">ClickUp</a></span>` : ''}
-                    </div>
-                    ${descriptionHTML}
-                </div>
-            `;
-        }
-
-        // ===============================
-        // CALENDÁRIO
-        // ===============================
-        function renderCalendar() {
-            const container = document.getElementById('calendarGrid');
-            const monthLabel = document.getElementById('calendarMonth');
-            
-            const now = new Date();
-            const year = now.getFullYear();
-            const month = now.getMonth();
-            
-            monthLabel.textContent = now.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
-            
-            const firstDay = new Date(year, month, 1);
-            const lastDay = new Date(year, month + 1, 0);
-            const startDate = new Date(firstDay);
-            startDate.setDate(startDate.getDate() - firstDay.getDay());
-            
-            const daysOfWeek = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
-            
-            let html = '';
-            
-            daysOfWeek.forEach(day => {
-                html += `<div class="calendar-day-header">${day}</div>`;
-            });
-            
-            const currentDate = new Date(startDate);
-            for (let i = 0; i < 42; i++) {
-                const isCurrentMonth = currentDate.getMonth() === month;
-                const isToday = currentDate.toDateString() === now.toDateString();
-                const dayEvents = getEventsForDate(currentDate);
-                const dayTasks = getTasksForDate(currentDate);
-                
-                const dayClass = `calendar-day ${isToday ? 'today' : ''} ${!isCurrentMonth ? 'other-month' : ''}`;
-                
-                html += `
-                    <div class="${dayClass}">
-                        <div style="font-weight: ${isToday ? '700' : '500'}; margin-bottom: 4px;">
-                            ${currentDate.getDate()}
-                        </div>
-                        ${dayEvents.map(event => `<div class="calendar-event" title="${event.title}">${event.title}</div>`).join('')}
-                        ${dayTasks.map(task => `<div class="calendar-task" title="${task.title}">${task.title}</div>`).join('')}
-                    </div>
-                `;
-                
-                currentDate.setDate(currentDate.getDate() + 1);
-            }
-            
-            container.innerHTML = `<div class="calendar-view">${html}</div>`;
-        }
-
-        function getEventsForDate(date) {
-            const dateStr = date.toDateString();
-            return allEvents.filter(event => {
-                const eventDate = new Date(event.start);
-                return eventDate.toDateString() === dateStr;
-            });
-        }
-
-        function getTasksForDate(date) {
-            const dateStr = date.toDateString();
-            return allTasks.filter(task => {
-                const taskDate = new Date(task.start);
-                return taskDate.toDateString() === dateStr;
-            });
-        }
-
-        // ===============================
-        // HELPERS
-        // ===============================
-        function getStatusLabel(status) {
-            const labels = {
-                'confirmed': '✅ Confirmado',
-                'tentative': '⏳ Tentativo',
-                'cancelled': '❌ Cancelado'
-            };
-            return labels[status] || status;
-        }
-
-        function getTaskStatusLabel(status) {
-            const labels = {
-                'open': '📋 Aberta',
-                'Open': '📋 Aberta',
-                'progress': '⚡ Em Progresso',
-                'in progress': '⚡ Em Progresso',
-                'review': '👀 Revisão',
-                'complete': '✅ Completa',
-                'closed': '✅ Fechada'
-            };
-            return labels[status] || `📝 ${status}`;
-        }
-
-        // ===============================
-        // AÇÕES
-        // ===============================
-        async function syncCalendar() {
-            showLoading(true);
-            await loadCalendarEvents();
-            updateMetrics();
-            renderCurrentView();
-            showLoading(false);
-            showNotification('Eventos sincronizados!', 'success');
-        }
-
-        async function syncClickUp() {
-            showLoading(true);
-            await loadClickUpTasks();
-            updateMetrics();
-            renderCurrentView();
-            showLoading(false);
-            showNotification('Demandas sincronizadas!', 'success');
-        }
-
-        function changeEventStatus(event, eventId) {
-            event.stopPropagation();
-            const currentEvent = allEvents.find(e => e.id === eventId);
-            if (!currentEvent) return;
-
-            const statuses = ['confirmed', 'tentative', 'cancelled'];
-            const currentIndex = statuses.indexOf(currentEvent.status);
-            const nextStatus = statuses[(currentIndex + 1) % statuses.length];
-            
-            currentEvent.status = nextStatus;
-            renderCurrentView();
-            showNotification(`Status alterado para ${getStatusLabel(nextStatus)}`, 'info');
-        }
-
-        function openEvent(eventId) {
-            const event = allEvents.find(e => e.id === eventId);
-            if (event) {
-                showNotification(`Evento: ${event.title}`, 'info');
-            }
-        }
-
-        // ===============================
-        // AUTO-SYNC
-        // ===============================
-        function setupAutoSync() {
-            setInterval(async () => {
-                console.log('🔄 Auto-sync executado');
-                await loadAllData();
-            }, CONFIG.AUTO_SYNC);
-        }
-
-        // ===============================
-        // UTILITÁRIOS
-        // ===============================
-        function showLoading(show) {
-            document.getElementById('loading').style.display = show ? 'block' : 'none';
-        }
-
-        function showNotification(message, type = 'info') {
-            const notification = document.createElement('div');
-            notification.className = `notification ${type}`;
-            notification.textContent = message;
-            document.body.appendChild(notification);
-            setTimeout(() => notification.remove(), 3000);
-        }
-
-        console.log('🦋 Dashboard Confia no Processo carregado com duplo clique para reset!');
-    </script>
-</body>
-</html>
+const NotificationCenter = ({ notifications }) => (
+    <div style={{position: 'fixed', top: '20px', right: '20px', zIndex: 10001, display: 'flex', flexDirection: 'column', gap: '10px'}}>
+        {notifications.map(n => (
+            <div key={n.id} className={`notification ${n.type}`} style={{padding: '14px 22px', borderRadius: '12px', color: 'white', fontWeight: 600, border: '1px solid rgba(255, 255, 255, 0.1)', backdropFilter: 'blur(5px)', animation: 'slideIn 0.3s ease, slideOut 0.3s ease 3s forwards', background: n.type === 'success' ? 'rgba(44, 182, 125, 0.8)' : n.type === 'error' ? 'rgba(239, 68, 68, 0.8)' : 'rgba(127, 90, 240, 0.8)'}}>
+                {n.message}
+            </div>
+        ))}
+    </div>
+);
