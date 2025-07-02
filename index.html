@@ -403,6 +403,7 @@
             cursor: pointer;
             transition: all 0.3s ease;
             position: relative;
+            user-select: none;
         }
 
         .status-badge:hover {
@@ -441,6 +442,34 @@
         .status-progress { background: #fff2e6; color: #fa8c16; }
         .status-complete { background: #c6f6d5; color: #059669; }
         .status-review { background: #f0e6ff; color: #7b68ee; }
+
+        /* Botão de Reset (Borracha) */
+        .reset-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            margin-left: 4px;
+            padding: 0;
+            background: rgba(239, 68, 68, 0.1);
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s ease;
+            opacity: 0.7;
+        }
+
+        .reset-btn:hover {
+            background: rgba(239, 68, 68, 0.2);
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        .reset-btn:active {
+            transform: scale(0.95);
+        }
 
         /* Seções por setor */
         .sector-section {
@@ -1375,7 +1404,7 @@ Ou qualquer outro formato de texto com suas tarefas..."
                 CREATE_TASK: '/webhook/dashboard-create-task',
                 CREATE_EVENT: '/webhook/dashboard-create-event',
                 CREATE_BULK_TASKS: '/webhook/dashboard-bulk-tasks',
-                UPDATE_TASK_STATUS: '/webhook/dashboard-update-task-status'  // ✅ NOVO ENDPOINT
+                UPDATE_TASK_STATUS: '/webhook/dashboard-update-task-status'
             },
             AUTO_SYNC: 300000
         };
@@ -1686,12 +1715,32 @@ Ou qualquer outro formato de texto com suas tarefas..."
         }
 
         // ===============================
-        // 🆕 ATUALIZAÇÃO DE STATUS (NOVO)
+        // 🆕 ATUALIZAÇÃO DE STATUS COM DUPLO CLIQUE
         // ===============================
         
+        let lastClickTime = 0;
+        let lastClickedTaskId = null;
+
         async function changeTaskStatus(event, taskId) {
             event.stopPropagation();
             
+            const currentTime = new Date().getTime();
+            const timeDiff = currentTime - lastClickTime;
+            
+            // Detectar duplo clique (menos de 500ms entre cliques)
+            if (timeDiff < 500 && lastClickedTaskId === taskId) {
+                // DUPLO CLIQUE - Resetar para 'open'
+                await resetTaskStatus(event, taskId);
+            } else {
+                // CLIQUE SIMPLES - Avançar status
+                await advanceTaskStatus(event, taskId);
+            }
+            
+            lastClickTime = currentTime;
+            lastClickedTaskId = taskId;
+        }
+
+        async function advanceTaskStatus(event, taskId) {
             const currentTask = allTasks.find(t => t.id === taskId);
             if (!currentTask) {
                 console.error('❌ Tarefa não encontrada:', taskId);
@@ -1741,6 +1790,11 @@ Ou qualquer outro formato de texto com suas tarefas..."
                     
                     showNotification(`✅ Status alterado para ${getTaskStatusLabel(nextStatus)}`, 'success');
                     
+                    // Re-renderizar se necessário
+                    setTimeout(() => {
+                        renderCurrentView();
+                    }, 300);
+                    
                     console.log('✅ Status atualizado com sucesso no ClickUp');
                 } else {
                     throw new Error(result.message || 'Erro ao atualizar status no ClickUp');
@@ -1754,6 +1808,154 @@ Ou qualquer outro formato de texto com suas tarefas..."
                 statusBadge.innerHTML = originalContent;
                 
                 showNotification('❌ Erro ao atualizar status: ' + error.message, 'error');
+            }
+        }
+
+        async function resetTaskStatus(event, taskId) {
+            const currentTask = allTasks.find(t => t.id === taskId);
+            if (!currentTask) {
+                console.error('❌ Tarefa não encontrada:', taskId);
+                return;
+            }
+
+            // Se já está em 'open', não faz nada
+            if (currentTask.status === 'open') {
+                showNotification('ℹ️ Tarefa já está em status "Aberta"', 'info');
+                return;
+            }
+
+            const statusBadge = event.target;
+            const originalContent = statusBadge.innerHTML;
+            
+            // Estado de loading
+            statusBadge.classList.add('loading');
+            statusBadge.innerHTML = 'Resetando...';
+            
+            try {
+                console.log(`🧹 Resetando status da tarefa ${taskId} de ${currentTask.status} para 'open' (duplo clique)`);
+                
+                // Preparar dados para envio
+                const requestData = {
+                    task_id: taskId,
+                    current_status: currentTask.status,
+                    new_status: 'open',
+                    task_title: currentTask.title,
+                    updated_by: 'dashboard_user_reset',
+                    updated_at: new Date().toISOString()
+                };
+                
+                const response = await fetch(`${CONFIG.N8N_BASE_URL}${CONFIG.ENDPOINTS.UPDATE_TASK_STATUS}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(requestData)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Atualizar status local
+                    const oldStatus = currentTask.status;
+                    currentTask.status = 'open';
+                    
+                    // Atualizar visual
+                    statusBadge.classList.remove('loading');
+                    statusBadge.className = 'status-badge status-open';
+                    statusBadge.innerHTML = getTaskStatusLabel('open');
+                    
+                    // Feedback de sucesso
+                    showNotification(`🧹 Status resetado: ${getTaskStatusLabel(oldStatus)} → ${getTaskStatusLabel('open')}`, 'success');
+                    
+                    // Re-renderizar
+                    setTimeout(() => {
+                        renderCurrentView();
+                    }, 300);
+                    
+                } else {
+                    throw new Error(result.message || result.error || 'Erro ao resetar status');
+                }
+                
+            } catch (error) {
+                console.error('❌ Erro ao resetar status:', error);
+                
+                // Restaurar estado
+                statusBadge.classList.remove('loading');
+                statusBadge.innerHTML = originalContent;
+                
+                showNotification(`❌ Erro ao resetar: ${error.message}`, 'error');
+            }
+        }
+
+        // Função separada para reset com botão de borracha
+        async function resetTaskStatusButton(event, taskId) {
+            event.stopPropagation();
+            
+            const currentTask = allTasks.find(t => t.id === taskId);
+            if (!currentTask) {
+                console.error('❌ Tarefa não encontrada:', taskId);
+                return;
+            }
+
+            if (currentTask.status === 'open') {
+                showNotification('ℹ️ Tarefa já está em status "Aberta"', 'info');
+                return;
+            }
+
+            const resetBtn = event.target.closest('.reset-btn');
+            const originalContent = resetBtn.innerHTML;
+            
+            // Estado de loading
+            resetBtn.innerHTML = '⏳';
+            resetBtn.style.pointerEvents = 'none';
+            resetBtn.style.opacity = '0.6';
+            
+            try {
+                console.log(`🧹 Resetando status da tarefa ${taskId} de ${currentTask.status} para 'open' (botão)`);
+                
+                const requestData = {
+                    task_id: taskId,
+                    current_status: currentTask.status,
+                    new_status: 'open',
+                    task_title: currentTask.title,
+                    updated_by: 'dashboard_user_reset_button',
+                    updated_at: new Date().toISOString()
+                };
+                
+                const response = await fetch(`${CONFIG.N8N_BASE_URL}${CONFIG.ENDPOINTS.UPDATE_TASK_STATUS}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(requestData)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    const oldStatus = currentTask.status;
+                    currentTask.status = 'open';
+                    
+                    showNotification(`🧹 Status resetado: ${getTaskStatusLabel(oldStatus)} → ${getTaskStatusLabel('open')}`, 'success');
+                    
+                    setTimeout(() => {
+                        renderCurrentView();
+                    }, 300);
+                    
+                } else {
+                    throw new Error(result.message || 'Erro ao resetar status');
+                }
+                
+            } catch (error) {
+                console.error('❌ Erro ao resetar status:', error);
+                showNotification(`❌ Erro ao resetar: ${error.message}`, 'error');
+            } finally {
+                // Restaurar botão
+                resetBtn.innerHTML = originalContent;
+                resetBtn.style.pointerEvents = 'auto';
+                resetBtn.style.opacity = '0.7';
             }
         }
 
@@ -2419,13 +2621,28 @@ Ou qualquer outro formato de texto com suas tarefas..."
                 descriptionHTML = `<div style="font-size: 0.8rem; color: var(--text-light); margin-top: 6px; line-height: 1.4;">${description}</div>`;
             }
 
+            // Mostrar borracha apenas se NÃO estiver em 'open'
+            const showResetBtn = task.status !== 'open';
+
             return `
                 <div class="item">
                     <div class="item-title">${task.title}</div>
                     <div class="item-meta">
                         ${task.assignees?.length ? `<span>👤 ${task.assignees.join(', ')}</span>` : ''}
                         ${dueDateHTML}
-                        <span class="status-badge status-${task.status}" onclick="changeTaskStatus(event, '${task.id}')">${getTaskStatusLabel(task.status)}</span>
+                        <span class="status-badge status-${task.status}" 
+                              onclick="changeTaskStatus(event, '${task.id}')"
+                              title="👆 Clique: Avançar status | 👆👆 Duplo clique: Resetar para 'Aberta'"
+                              style="cursor: pointer;">
+                            ${getTaskStatusLabel(task.status)}
+                        </span>
+                        ${showResetBtn ? `
+                            <button class="reset-btn" 
+                                    onclick="resetTaskStatusButton(event, '${task.id}')" 
+                                    title="🧹 Resetar para 'Aberta'">
+                                🧹
+                            </button>
+                        ` : ''}
                         ${task.url ? `<span style="font-size: 0.7rem;">🔗 <a href="${task.url}" target="_blank" style="color: inherit; text-decoration: none;">ClickUp</a></span>` : ''}
                     </div>
                     ${descriptionHTML}
@@ -2592,8 +2809,7 @@ Ou qualquer outro formato de texto com suas tarefas..."
             setTimeout(() => notification.remove(), 3000);
         }
 
-        console.log('🦋 Dashboard Confia no Processo carregado com atualização de status!');
+        console.log('🦋 Dashboard Confia no Processo carregado com duplo clique para reset!');
     </script>
 </body>
 </html>
-                '
