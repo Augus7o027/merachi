@@ -1,0 +1,47 @@
+{
+  "name": "merachi",
+  "version": "1.0.0",
+  "description": "Sistema de gestão integrado com Google Calendar, ClickUp e Google Drive",
+  "main": "src/js/app.js",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "serve": "npx serve public -p 3000",
+    "lint": "eslint src/js/**/*.js",
+    "format": "prettier --write \"src/**/*.{js,css,html}\"",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "dashboard",
+    "gestão",
+    "productivity",
+    "pwa",
+    "calendar",
+    "clickup",
+    "google-drive"
+  ],
+  "author": "MERACHI Team",
+  "license": "MIT",
+  "devDependencies": {
+    "vite": "^5.0.0",
+    "vite-plugin-pwa": "^0.17.0",
+    "eslint": "^8.50.0",
+    "prettier": "^3.0.0",
+    "@vitejs/plugin-legacy": "^5.0.0"
+  },
+  "dependencies": {},
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Augus7o027/merachi.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Augus7o027/merachi/issues"
+  },
+  "homepage": "https://github.com/Augus7o027/merachi#readme"
+}
