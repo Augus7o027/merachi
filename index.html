@@ -1066,6 +1066,163 @@
         .more-menu-title { font-size: 14px; font-weight: 700; color: var(--text); }
         .more-menu-desc { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
         
+        /* ===== GRUPOS CNP ===== */
+        .grupos-status {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-light);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+        
+        .grupos-status-icon {
+            width: 48px;
+            height: 48px;
+            background: rgba(16, 185, 129, 0.1);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .grupos-status-info { flex: 1; }
+        .grupos-status-title { font-size: 15px; font-weight: 700; color: var(--text); }
+        .grupos-status-desc { font-size: 12px; color: var(--text-muted); }
+        
+        .grupos-status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        
+        .grupos-status-badge.online { background: rgba(16, 185, 129, 0.15); color: #10B981; }
+        .grupos-status-badge.offline { background: rgba(239, 68, 68, 0.15); color: #EF4444; }
+        
+        .grupo-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-light);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .grupo-card:hover { border-color: var(--primary-light); }
+        .grupo-card:active { transform: scale(0.98); }
+        
+        .grupo-card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        
+        .grupo-card-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .grupo-card-icon.lancamentos { background: linear-gradient(135deg, #8B5CF6, #6366F1); }
+        .grupo-card-icon.produtos { background: linear-gradient(135deg, #F59E0B, #D97706); }
+        .grupo-card-icon.geral { background: linear-gradient(135deg, #25D366, #128C7E); }
+        
+        .grupo-card-info { flex: 1; }
+        .grupo-card-name { font-size: 15px; font-weight: 700; color: var(--text); }
+        .grupo-card-members { font-size: 12px; color: var(--text-muted); }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .grupo-card-stats {
+            display: flex;
+            gap: 16px;
+            padding: 12px;
+            background: var(--bg);
+            border-radius: 12px;
+        }
+        
+        .grupo-stat {
+            flex: 1;
+            text-align: center;
+        }
+        
+        .grupo-stat-value { font-size: 18px; font-weight: 800; color: var(--primary); }
+        .grupo-stat-label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; }
+        
+        .resumo-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-light);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+        
+        .resumo-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .resumo-card-title { font-size: 15px; font-weight: 700; color: var(--text); }
+        .resumo-card-date { font-size: 12px; color: var(--text-muted); }
+        
+        .resumo-card-content {
+            font-size: 13px;
+            line-height: 1.6;
+            color: var(--text-muted);
+        }
+        
+        .resumo-card-content h3 { font-size: 14px; color: var(--text); margin: 12px 0 6px; }
+        .resumo-card-content ul { padding-left: 16px; margin: 6px 0; }
+        .resumo-card-content li { margin: 4px 0; }
+        
+        .demanda-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-light);
+            border-radius: 12px;
+            padding: 12px 16px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .demanda-priority {
+            width: 4px;
+            height: 32px;
+            border-radius: 2px;
+        }
+        
+        .demanda-priority.alta { background: #EF4444; }
+        .demanda-priority.media { background: #F59E0B; }
+        .demanda-priority.baixa { background: #10B981; }
+        
+        .demanda-info { flex: 1; }
+        .demanda-title { font-size: 14px; font-weight: 600; color: var(--text); }
+        .demanda-meta { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+        
+        .demanda-setor {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            background: var(--primary-glow);
+            color: var(--primary);
+        }
+        
         /* ===== FAB ===== */
         .fab-container {
             position: fixed;
@@ -1513,10 +1670,129 @@
         .lyrics-title { font-size: 20px; font-weight: 700; }
         .lyrics-artist { font-size: 14px; color: var(--text-secondary); }
         .lyrics-text { font-size: 15px; line-height: 2; color: var(--text-secondary); white-space: pre-wrap; }
+        
+        /* ===== LOGIN ===== */
+        .login-screen {
+            position: fixed;
+            inset: 0;
+            background: var(--bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+        }
+        
+        .login-container {
+            width: 90%;
+            max-width: 400px;
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 32px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+        
+        .login-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+        
+        .login-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+        
+        .login-header h2 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        
+        .login-header p {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            font-size: 14px;
+            background: var(--bg);
+            color: var(--text);
+            box-sizing: border-box;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        
+        .login-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #7C3AED, #5B21B6);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .login-error {
+            margin-top: 16px;
+            padding: 12px;
+            background: #FEE2E2;
+            border: 1px solid #EF4444;
+            border-radius: 8px;
+            color: #991B1B;
+            font-size: 12px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
-    <div class="app">
+    <!-- Login Screen -->
+    <div id="loginScreen" class="login-screen">
+        <div class="login-container">
+            <div class="login-header">
+                <div class="login-icon">🦋</div>
+                <h2>MERACHI</h2>
+                <p>Confia no Processo</p>
+            </div>
+            
+            <div class="login-form">
+                <div class="form-group">
+                    <label>Usuário</label>
+                    <input type="text" id="loginUser" placeholder="Digite seu nome" autocomplete="username">
+                </div>
+                
+                <div class="form-group">
+                    <label>Senha</label>
+                    <input type="password" id="loginPass" placeholder="Digite sua senha" autocomplete="current-password">
+                </div>
+                
+                <button onclick="attemptLogin()" class="login-btn">Entrar</button>
+                
+                <div id="loginError" class="login-error" style="display: none;"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="app" id="appContainer" style="display: none;">
         <!-- Header -->
         <header class="header">
             <div class="header-top">
@@ -1536,11 +1812,14 @@
                     <button class="header-btn" onclick="syncAll()">
                         <span class="material-symbols-rounded">sync</span>
                     </button>
+                    <button class="header-btn" onclick="logout()" title="Sair" style="color: var(--error);">
+                        <span class="material-symbols-rounded">logout</span>
+                    </button>
                 </div>
             </div>
             <div>
                 <div class="page-title" id="pageTitle">Início</div>
-                <div class="page-subtitle" id="pageSubtitle">Bem-vindo de volta</div>
+                <div class="page-subtitle" id="pageSubtitle"><span id="userName"></span></div>
             </div>
         </header>
         
@@ -1650,6 +1929,34 @@
                     <button class="tab" onclick="setIdeasTab('copies')">📝 Copies Salvas</button>
                 </div>
                 <div id="ideasContent"></div>
+            </section>
+            
+            <!-- Grupos View -->
+            <section class="view" id="viewGrupos">
+                <div class="section-header">
+                    <h3 class="section-title">💬 Grupos CNP</h3>
+                </div>
+                
+                <div class="grupos-status" id="gruposStatus">
+                    <div class="grupos-status-icon">
+                        <span class="material-symbols-rounded" style="font-size: 32px; color: #10B981;">wifi</span>
+                    </div>
+                    <div class="grupos-status-info">
+                        <div class="grupos-status-title">WhatsApp Conectado</div>
+                        <div class="grupos-status-desc">Evolution API ativa</div>
+                    </div>
+                    <div class="grupos-status-badge online">Online</div>
+                </div>
+                
+                <div class="tabs" style="margin-bottom: 16px;">
+                    <button class="tab active" onclick="setGruposTab('resumos')">📊 Resumos</button>
+                    <button class="tab" onclick="setGruposTab('demandas')">📋 Demandas</button>
+                    <button class="tab" onclick="setGruposTab('config')">⚙️ Config</button>
+                </div>
+                
+                <div id="gruposContent">
+                    <!-- Conteúdo dinâmico -->
+                </div>
             </section>
             
             <!-- Config View -->
@@ -1762,6 +2069,15 @@
                 <div class="more-menu-header-title">Mais opções</div>
             </div>
             <div class="more-menu-grid">
+                <div class="more-menu-item" onclick="showView('grupos'); closeMoreMenu();">
+                    <div class="more-menu-icon grupos" style="background: linear-gradient(135deg, #25D366, #128C7E);">
+                        <span class="material-symbols-rounded" style="color: white; font-size: 26px;">forum</span>
+                    </div>
+                    <div class="more-menu-text">
+                        <div class="more-menu-title">Grupos</div>
+                        <div class="more-menu-desc">Resumos CNP</div>
+                    </div>
+                </div>
                 <div class="more-menu-item" onclick="showView('musica'); closeMoreMenu();">
                     <div class="more-menu-icon musica">
                         <span class="material-symbols-rounded" style="color: white; font-size: 26px;">library_music</span>
@@ -1819,6 +2135,91 @@
     </div>
     
     <script>
+        // ===== AUTH SYSTEM =====
+        const USERS = {
+            'augusto': { pass: 'cnp2025', role: 'admin', name: 'Augusto' },
+            'merachi': { pass: 'merachi2025', role: 'admin', name: 'Merachi' },
+            'patricia': { pass: 'equipe2025', role: 'team', name: 'Patricia' },
+            'isabella': { pass: 'equipe2025', role: 'team', name: 'Isabella' },
+            'marcus': { pass: 'equipe2025', role: 'team', name: 'Marcus' },
+            'diego': { pass: 'equipe2025', role: 'team', name: 'Diego' }
+        };
+        
+        let currentUser = JSON.parse(localStorage.getItem('merachi_user') || 'null');
+        
+        function attemptLogin() {
+            const username = document.getElementById('loginUser').value.toLowerCase().trim();
+            const password = document.getElementById('loginPass').value;
+            const user = USERS[username];
+            
+            if (user && user.pass === password) {
+                currentUser = { username, role: user.role, name: user.name };
+                localStorage.setItem('merachi_user', JSON.stringify(currentUser));
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('appContainer').style.display = 'block';
+                applyPermissions();
+            } else {
+                const error = document.getElementById('loginError');
+                error.textContent = 'Usuário ou senha incorretos';
+                error.style.display = 'block';
+            }
+        }
+        
+        function logout() {
+            if (confirm('Deseja sair?')) {
+                localStorage.removeItem('merachi_user');
+                location.reload();
+            }
+        }
+        
+        function isAdmin() {
+            return currentUser && currentUser.role === 'admin';
+        }
+        
+        function applyPermissions() {
+            // Atualizar nome no header
+            const userName = document.getElementById('userName');
+            if (userName && currentUser) {
+                userName.textContent = `Olá, ${currentUser.name}!`;
+            }
+            
+            if (!isAdmin()) {
+                // Esconder FAB para equipe
+                const fab = document.querySelector('.fab-container');
+                if (fab) fab.style.display = 'none';
+                
+                // Remover views restritas do nav
+                const navButtons = document.querySelectorAll('.nav-item');
+                navButtons.forEach(btn => {
+                    const view = btn.getAttribute('onclick')?.match(/showView\('(.+?)'\)/)?.[1];
+                    if (['grupos', 'ideias', 'config'].includes(view)) {
+                        btn.style.display = 'none';
+                    }
+                });
+            }
+        }
+        
+        // Check auth on load
+        window.addEventListener('DOMContentLoaded', () => {
+            if (currentUser) {
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('appContainer').style.display = 'block';
+                applyPermissions();
+            } else {
+                document.getElementById('loginScreen').style.display = 'flex';
+            }
+        });
+        
+        // Allow Enter key on login
+        document.addEventListener('DOMContentLoaded', () => {
+            const passInput = document.getElementById('loginPass');
+            if (passInput) {
+                passInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') attemptLogin();
+                });
+            }
+        });
+        
         // ===== CONFIG =====
         const CONFIG = {
             BASE_URL: 'https://n8n-x8go8cgk0g0c0wc4004wosoc.themodernservers.com/webhook',
@@ -2972,6 +3373,12 @@ Gratidão, criador e criação
         
         // ===== NAVIGATION =====
         function showView(view) {
+            // Verificar permissões
+            if (!isAdmin() && ['grupos', 'ideias', 'config'].includes(view)) {
+                showToast('❌ Acesso restrito a administradores');
+                return;
+            }
+            
             currentView = view;
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(n => {
@@ -2984,6 +3391,7 @@ Gratidão, criador e criação
                 'agenda': { el: 'viewAgenda', title: 'Agenda', sub: 'Calendário completo', nav: 1 },
                 'tarefas': { el: 'viewTarefas', title: 'Tarefas', sub: 'Kanban de tarefas', nav: 2 },
                 'copy': { el: 'viewCopy', title: 'Copy AI', sub: 'Gerador de conteúdo', nav: 3 },
+                'grupos': { el: 'viewGrupos', title: 'Grupos CNP', sub: 'Resumos e demandas', nav: -1 },
                 'musica': { el: 'viewMusica', title: 'Música', sub: 'Álbum CNP', nav: -1 },
                 'analytics': { el: 'viewAnalytics', title: 'Analytics', sub: 'Métricas', nav: -1 },
                 'ideias': { el: 'viewIdeias', title: 'Ideias', sub: 'Banco de ideias', nav: -1 },
@@ -3004,6 +3412,10 @@ Gratidão, criador e criação
             if (view === 'copy') renderCopyGenerator();
             if (view === 'ideias') renderIdeas();
             if (view === 'agenda') { renderDayFilter(); renderAgenda(); }
+            if (view === 'grupos') {
+                renderGrupos();
+                loadGruposData(); // Carregar dados reais
+            }
         }
         
         // ===== MORE MENU =====
@@ -3017,6 +3429,587 @@ Gratidão, criador e criação
             document.getElementById('moreMenuOverlay').classList.remove('active');
         }
         
+        // ===== GRUPOS CNP =====
+        const N8N_BASE_URL = 'https://n8n-x8go8cgk0g0c0wc4004wosoc.themodernservers.com';
+        let currentGruposTab = 'resumos';
+        let gruposLoading = false;
+        let gruposData = {
+            grupos: [
+                {
+                    id: 'lancamentos',
+                    name: 'CNP Lançamentos',
+                    groupId: '',
+                    members: 'Diego, Vinicius, MERACHI, Augusto, Estevao, Marcus',
+                    icon: 'lancamentos',
+                    stats: { mensagens: 0, demandas: 0, eventos: 0 }
+                },
+                {
+                    id: 'produtos',
+                    name: 'CNP Produtos',
+                    groupId: '',
+                    members: 'MERACHI, Augusto, Patricia, Isabella',
+                    icon: 'produtos',
+                    stats: { mensagens: 0, demandas: 0, eventos: 0 }
+                },
+                {
+                    id: 'geral',
+                    name: 'Merachi Geral',
+                    groupId: '',
+                    members: 'MERACHI, Augusto, Marcus',
+                    icon: 'geral',
+                    stats: { mensagens: 0, demandas: 0, eventos: 0 }
+                }
+            ],
+            resumos: [],
+            demandas: [],
+            eventos: []
+        };
+        
+        // Carregar dados dos grupos via n8n
+        async function loadGruposData() {
+            gruposLoading = true;
+            renderGrupos();
+            
+            try {
+                // Buscar demandas
+                const demandasRes = await fetch(`${N8N_BASE_URL}/webhook/buscar-demandas`);
+                if (demandasRes.ok) {
+                    const demandas = await demandasRes.json();
+                    gruposData.demandas = Array.isArray(demandas) ? demandas : [];
+                    console.log('📋 Total de demandas:', gruposData.demandas.length);
+                    
+                    // DEBUG: Ver exemplos de valores do campo Grupo
+                    if (gruposData.demandas.length > 0) {
+                        console.log('📋 Exemplos de campo Grupo nas demandas:');
+                        gruposData.demandas.slice(0, 5).forEach((d, i) => {
+                            console.log(`  [${i}] Grupo: "${d.Grupo}" | Titulo: ${d.Titulo}`);
+                        });
+                    }
+                    
+                    // Atualizar stats dos grupos
+                    gruposData.grupos.forEach(g => {
+                        console.log(`\n🔍 Filtrando grupo: ${g.name} (id: ${g.id})`);
+                        const matched = gruposData.demandas.filter(d => {
+                            if (!d.Grupo) return false;
+                            const grupo = d.Grupo.toLowerCase();
+                            const matchId = grupo.includes(g.id);
+                            const matchName = grupo.includes(g.name.toLowerCase());
+                            
+                            if (matchId || matchName) {
+                                console.log(`  ✅ Match: "${d.Grupo}" → ${d.Titulo}`);
+                            }
+                            
+                            return matchId || matchName;
+                        });
+                        g.stats.demandas = matched.length;
+                        console.log(`  Total: ${matched.length} demandas`);
+                    });
+                }
+                
+                // Buscar eventos
+                const eventosRes = await fetch(`${N8N_BASE_URL}/webhook/buscar-eventos`);
+                if (eventosRes.ok) {
+                    const eventos = await eventosRes.json();
+                    gruposData.eventos = Array.isArray(eventos) ? eventos : [];
+                    console.log('\n📅 Total de eventos:', gruposData.eventos.length);
+                    
+                    // DEBUG: Ver exemplos de valores do campo Grupo
+                    if (gruposData.eventos.length > 0) {
+                        console.log('📅 Exemplos de campo Grupo nos eventos:');
+                        gruposData.eventos.slice(0, 3).forEach((e, i) => {
+                            console.log(`  [${i}] Grupo: "${e.Grupo}" | Titulo: ${e.Titulo}`);
+                        });
+                    }
+                    
+                    gruposData.grupos.forEach(g => {
+                        const matched = gruposData.eventos.filter(e => {
+                            if (!e.Grupo) return false;
+                            const grupo = e.Grupo.toLowerCase();
+                            return grupo.includes(g.id) || grupo.includes(g.name.toLowerCase());
+                        });
+                        g.stats.eventos = matched.length;
+                    });
+                }
+                
+                // Buscar resumos
+                const resumosRes = await fetch(`${N8N_BASE_URL}/webhook/buscar-resumos`);
+                if (resumosRes.ok) {
+                    const resumos = await resumosRes.json();
+                    gruposData.resumos = Array.isArray(resumos) ? resumos : [];
+                }
+                
+                console.log('✅ Dados dos grupos carregados:', gruposData);
+            } catch (error) {
+                console.error('❌ Erro ao carregar dados dos grupos:', error);
+                showToast('⚠️ Erro ao carregar dados');
+            }
+            
+            gruposLoading = false;
+            renderGrupos();
+        }
+        
+        // Criar demanda manual
+        async function criarDemanda(dados) {
+            try {
+                const res = await fetch(`${N8N_BASE_URL}/webhook/criar-tarefa-manual`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(dados)
+                });
+                
+                if (res.ok) {
+                    showToast('✅ Demanda criada!');
+                    loadGruposData();
+                    return true;
+                }
+            } catch (error) {
+                console.error('Erro ao criar demanda:', error);
+                showToast('❌ Erro ao criar demanda');
+            }
+            return false;
+        }
+        
+        // Criar evento manual
+        async function criarEvento(dados) {
+            try {
+                const res = await fetch(`${N8N_BASE_URL}/webhook/criar-evento-manual`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(dados)
+                });
+                
+                if (res.ok) {
+                    showToast('✅ Evento criado!');
+                    loadGruposData();
+                    return true;
+                }
+            } catch (error) {
+                console.error('Erro ao criar evento:', error);
+                showToast('❌ Erro ao criar evento');
+            }
+            return false;
+        }
+        
+        // Atualizar status de demanda
+        async function atualizarStatusDemanda(id, status) {
+            try {
+                const res = await fetch(`${N8N_BASE_URL}/webhook/atualizar-status`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id, status, sheet: 'Demandas' })
+                });
+                
+                if (res.ok) {
+                    showToast('✅ Status atualizado!');
+                    loadGruposData();
+                    return true;
+                }
+            } catch (error) {
+                console.error('Erro ao atualizar status:', error);
+                showToast('❌ Erro ao atualizar');
+            }
+            return false;
+        }
+        
+        function setGruposTab(tab) {
+            currentGruposTab = tab;
+            document.querySelectorAll('#viewGrupos .tab').forEach((t, i) => {
+                t.classList.toggle('active', ['resumos', 'demandas', 'config'][i] === tab);
+            });
+            renderGrupos();
+        }
+        
+        function renderGrupos() {
+            const container = document.getElementById('gruposContent');
+            
+            // Loading state
+            if (gruposLoading) {
+                container.innerHTML = `
+                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 60px 20px; gap: 16px;">
+                        <div style="width: 40px; height: 40px; border: 3px solid var(--border); border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite;"></div>
+                        <div style="color: var(--text-secondary); font-size: 14px;">Carregando dados dos grupos...</div>
+                    </div>
+                `;
+                return;
+            }
+            
+            if (currentGruposTab === 'resumos') {
+                // Pegar último resumo
+                const ultimoResumo = gruposData.resumos.length > 0 ? gruposData.resumos[gruposData.resumos.length - 1] : null;
+                
+                // Totais gerais
+                const totalDemandas = gruposData.demandas.length;
+                const totalEventos = gruposData.eventos.length;
+                const totalResumos = gruposData.resumos.length;
+                
+                container.innerHTML = `
+                    <!-- Card de Totais Gerais -->
+                    <div style="background: linear-gradient(135deg, #7C3AED, #5B21B6); border-radius: 20px; padding: 20px; margin-bottom: 20px; color: white;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                            <div>
+                                <div style="font-size: 13px; opacity: 0.9;">📊 Totais Extraídos</div>
+                                <div style="font-size: 11px; opacity: 0.7;">WhatsApp Agent ativo</div>
+                            </div>
+                            <button onclick="loadGruposData()" style="background: rgba(255,255,255,0.2); border: none; border-radius: 10px; color: white; cursor: pointer; padding: 8px 12px; font-size: 12px;">
+                                <span class="material-symbols-rounded" style="font-size: 18px;">refresh</span>
+                            </button>
+                        </div>
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
+                            <div style="background: rgba(255,255,255,0.15); border-radius: 12px; padding: 12px; text-align: center;">
+                                <div style="font-size: 24px; font-weight: 800;">${totalDemandas}</div>
+                                <div style="font-size: 11px; opacity: 0.8;">Demandas</div>
+                            </div>
+                            <div style="background: rgba(255,255,255,0.15); border-radius: 12px; padding: 12px; text-align: center;">
+                                <div style="font-size: 24px; font-weight: 800;">${totalEventos}</div>
+                                <div style="font-size: 11px; opacity: 0.8;">Eventos</div>
+                            </div>
+                            <div style="background: rgba(255,255,255,0.15); border-radius: 12px; padding: 12px; text-align: center;">
+                                <div style="font-size: 24px; font-weight: 800;">${totalResumos}</div>
+                                <div style="font-size: 11px; opacity: 0.8;">Resumos</div>
+                            </div>
+                        </div>
+                    </div>
+                
+                    <div class="section-header" style="display: flex; justify-content: space-between; align-items: center;">
+                        <h3 class="section-title">📱 Grupos Monitorados</h3>
+                    </div>
+                    
+                    ${gruposData.grupos.map(g => `
+                        <div class="grupo-card" onclick="showGrupoDetail('${g.id}')">
+                            <div class="grupo-card-header">
+                                <div class="grupo-card-icon ${g.icon}">
+                                    <span class="material-symbols-rounded" style="color: white; font-size: 22px;">
+                                        ${g.icon === 'lancamentos' ? 'rocket_launch' : g.icon === 'produtos' ? 'inventory_2' : 'groups'}
+                                    </span>
+                                </div>
+                                <div class="grupo-card-info">
+                                    <div class="grupo-card-name">${g.name}</div>
+                                    <div class="grupo-card-members">${g.members}</div>
+                                </div>
+                            </div>
+                            <div class="grupo-card-stats">
+                                <div class="grupo-stat">
+                                    <div class="grupo-stat-value">${g.stats.mensagens}</div>
+                                    <div class="grupo-stat-label">Msgs</div>
+                                </div>
+                                <div class="grupo-stat">
+                                    <div class="grupo-stat-value">${g.stats.demandas}</div>
+                                    <div class="grupo-stat-label">Demandas</div>
+                                </div>
+                                <div class="grupo-stat">
+                                    <div class="grupo-stat-value">${g.stats.eventos}</div>
+                                    <div class="grupo-stat-label">Eventos</div>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+                    
+                    <div class="section-header" style="margin-top: 20px;">
+                        <h3 class="section-title">📊 Último Resumo Semanal</h3>
+                    </div>
+                    
+                    ${ultimoResumo ? `
+                        <div class="resumo-card">
+                            <div class="resumo-card-header">
+                                <div class="resumo-card-title">${ultimoResumo.Semana || 'Resumo'}</div>
+                                <div class="resumo-card-date">${ultimoResumo.Grupo || ''} • ${ultimoResumo.DataGeracao ? new Date(ultimoResumo.DataGeracao).toLocaleDateString('pt-BR') : ''}</div>
+                            </div>
+                            <div class="resumo-card-content">
+                                <div style="white-space: pre-wrap; font-size: 13px; line-height: 1.6;">${ultimoResumo.Resumo || 'Sem resumo disponível'}</div>
+                            </div>
+                            <div style="display: flex; gap: 8px; margin-top: 12px;">
+                                <div style="padding: 6px 12px; background: var(--bg); border-radius: 8px; font-size: 12px;">
+                                    📨 ${ultimoResumo.TotalMensagens || 0} msgs
+                                </div>
+                                <div style="padding: 6px 12px; background: var(--bg); border-radius: 8px; font-size: 12px;">
+                                    🎤 ${ultimoResumo.TotalAudios || 0} áudios
+                                </div>
+                                <div style="padding: 6px 12px; background: var(--bg); border-radius: 8px; font-size: 12px;">
+                                    📋 ${ultimoResumo.TotalDemandas || 0} demandas
+                                </div>
+                            </div>
+                        </div>
+                    ` : `
+                        <div class="resumo-card" style="text-align: center; padding: 40px 20px;">
+                            <span class="material-symbols-rounded" style="font-size: 48px; color: var(--text-muted); margin-bottom: 12px;">summarize</span>
+                            <div style="color: var(--text-secondary);">Nenhum resumo gerado ainda</div>
+                            <div style="color: var(--text-muted); font-size: 12px; margin-top: 4px;">O resumo semanal é gerado todo domingo às 18h</div>
+                        </div>
+                    `}
+                `;
+            } else if (currentGruposTab === 'demandas') {
+                // Filtrar apenas demandas válidas (com título ou descrição)
+                const todasDemandas = gruposData.demandas || [];
+                const demandas = todasDemandas.filter(d => d.Titulo || d.Descricao || d.MsgOrigem);
+                const demandasPendentes = demandas.filter(d => d.Status === 'pendente');
+                const demandasInvalidas = todasDemandas.length - demandas.length;
+                
+                container.innerHTML = `
+                    <div class="section-header" style="display: flex; justify-content: space-between; align-items: center;">
+                        <h3 class="section-title">📋 Demandas (${demandas.length})</h3>
+                        <button onclick="showNovaDemandaModal()" style="background: var(--primary); color: white; border: none; border-radius: 8px; padding: 8px 12px; cursor: pointer; font-size: 12px; display: flex; align-items: center; gap: 4px;">
+                            <span class="material-symbols-rounded" style="font-size: 16px;">add</span> Nova
+                        </button>
+                    </div>
+                    
+                    ${demandasInvalidas > 0 ? `
+                        <div style="background: #FEF3C7; border: 1px solid #F59E0B; border-radius: 12px; padding: 12px; margin-bottom: 16px; font-size: 12px; color: #92400E;">
+                            ⚠️ <strong>${demandasInvalidas} demandas sem título/descrição</strong> foram ocultadas. Corrija o nó "Salvar Demanda" no n8n.
+                        </div>
+                    ` : ''}
+                    
+                    <div style="display: flex; gap: 8px; margin-bottom: 16px; overflow-x: auto;">
+                        <button class="tab active" onclick="filterDemandas('todas')" style="flex-shrink: 0;">Todas (${demandas.length})</button>
+                        <button class="tab" onclick="filterDemandas('alta')" style="flex-shrink: 0;">🔴 Alta</button>
+                        <button class="tab" onclick="filterDemandas('pendente')" style="flex-shrink: 0;">⏳ Pendentes (${demandasPendentes.length})</button>
+                    </div>
+                    
+                    <div id="demandasList">
+                        ${demandas.length > 0 ? demandas.slice().reverse().map(d => `
+                            <div class="demanda-card" onclick="showDemandaDetail('${d.ID}')">
+                                <div class="demanda-priority ${d.Prioridade || 'media'}"></div>
+                                <div class="demanda-info">
+                                    <div class="demanda-title">${d.Titulo || d.Descricao?.substring(0, 50) || d.MsgOrigem?.substring(0, 40) || 'Demanda sem descrição'}</div>
+                                    <div class="demanda-meta">
+                                        ${d.Responsavel ? '@' + d.Responsavel : ''} • ${d.Grupo || 'Geral'} • ${d.DataCriacao || ''}
+                                        ${d.Status === 'concluido' ? '<span style="color: var(--success);">✓</span>' : ''}
+                                    </div>
+                                </div>
+                                <div class="demanda-setor">${d.Setor || 'Geral'}</div>
+                            </div>
+                        `).join('') : `
+                            <div style="text-align: center; padding: 40px 20px; color: var(--text-secondary);">
+                                <span class="material-symbols-rounded" style="font-size: 48px; color: var(--text-muted); margin-bottom: 12px;">task_alt</span>
+                                <div>Nenhuma demanda encontrada</div>
+                                <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Demandas são extraídas automaticamente das conversas</div>
+                            </div>
+                        `}
+                    </div>
+                `;
+            } else if (currentGruposTab === 'config') {
+                container.innerHTML = `
+                    <div class="section-header">
+                        <h3 class="section-title">⚙️ Configuração WhatsApp</h3>
+                    </div>
+                    
+                    <div class="analytics-card">
+                        <div class="analytics-title" style="margin-bottom: 12px;">🔗 Evolution API</div>
+                        <div class="form-group" style="margin-bottom: 8px;">
+                            <input type="text" class="form-input" id="evoApiUrl" placeholder="URL da API (ex: https://evo.seudominio.com)">
+                        </div>
+                        <div class="form-group" style="margin-bottom: 8px;">
+                            <input type="text" class="form-input" id="evoInstance" placeholder="Nome da Instância">
+                        </div>
+                        <div class="form-group" style="margin-bottom: 8px;">
+                            <input type="password" class="form-input" id="evoApiKey" placeholder="API Key">
+                        </div>
+                        <button class="form-btn" onclick="saveEvoConfig()" style="padding: 12px;">Salvar Configuração</button>
+                    </div>
+                    
+                    <div class="analytics-card">
+                        <div class="analytics-title" style="margin-bottom: 12px;">📱 Grupos Monitorados</div>
+                        <div class="form-group" style="margin-bottom: 8px;">
+                            <input type="text" class="form-input" id="grupoLancamentos" placeholder="ID Grupo Lançamentos (xxxxx@g.us)">
+                        </div>
+                        <div class="form-group" style="margin-bottom: 8px;">
+                            <input type="text" class="form-input" id="grupoProdutos" placeholder="ID Grupo Produtos">
+                        </div>
+                        <div class="form-group" style="margin-bottom: 8px;">
+                            <input type="text" class="form-input" id="grupoGeral" placeholder="ID Grupo Geral">
+                        </div>
+                        <button class="form-btn" onclick="saveGruposConfig()" style="padding: 12px;">Salvar Grupos</button>
+                    </div>
+                    
+                    <div class="analytics-card">
+                        <div class="analytics-title" style="margin-bottom: 12px;">🤖 Agente AI</div>
+                        <div class="toggle-container" style="padding: 0; border: none; margin-bottom: 12px;">
+                            <div class="toggle-info">
+                                <div class="toggle-label">Extração Automática</div>
+                                <div class="toggle-desc">Detectar demandas e eventos</div>
+                            </div>
+                            <div class="toggle-switch active"></div>
+                        </div>
+                        <div class="toggle-container" style="padding: 0; border: none; margin-bottom: 12px;">
+                            <div class="toggle-info">
+                                <div class="toggle-label">Resumo Semanal</div>
+                                <div class="toggle-desc">Enviar todo domingo às 18h</div>
+                            </div>
+                            <div class="toggle-switch active"></div>
+                        </div>
+                        <div class="toggle-container" style="padding: 0; border: none;">
+                            <div class="toggle-info">
+                                <div class="toggle-label">Criar Eventos Auto</div>
+                                <div class="toggle-desc">Adicionar ao Google Calendar</div>
+                            </div>
+                            <div class="toggle-switch"></div>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+        
+        function showGrupoDetail(grupoId) {
+            const grupo = gruposData.grupos.find(g => g.id === grupoId);
+            if (!grupo) return;
+            
+            showToast(`Abrindo ${grupo.name}...`);
+            // TODO: Implementar modal com detalhes do grupo
+        }
+        
+        function saveEvoConfig() {
+            const config = {
+                url: document.getElementById('evoApiUrl').value,
+                instance: document.getElementById('evoInstance').value,
+                apiKey: document.getElementById('evoApiKey').value
+            };
+            localStorage.setItem('evoConfig', JSON.stringify(config));
+            showToast('✅ Configuração Evolution API salva!');
+        }
+        
+        function saveGruposConfig() {
+            const config = {
+                lancamentos: document.getElementById('grupoLancamentos').value,
+                produtos: document.getElementById('grupoProdutos').value,
+                geral: document.getElementById('grupoGeral').value
+            };
+            localStorage.setItem('gruposConfig', JSON.stringify(config));
+            showToast('✅ Grupos salvos!');
+        }
+        
+        // Filtrar demandas
+        function filterDemandas(tipo) {
+            const demandas = gruposData.demandas || [];
+            let filtered = demandas;
+            
+            if (tipo === 'alta') {
+                filtered = demandas.filter(d => d.Prioridade === 'alta');
+            } else if (tipo === 'pendente') {
+                filtered = demandas.filter(d => d.Status === 'pendente');
+            }
+            
+            const listEl = document.getElementById('demandasList');
+            if (listEl) {
+                listEl.innerHTML = filtered.length > 0 ? filtered.slice().reverse().map(d => `
+                    <div class="demanda-card" onclick="showDemandaDetail('${d.ID}')">
+                        <div class="demanda-priority ${d.Prioridade || 'media'}"></div>
+                        <div class="demanda-info">
+                            <div class="demanda-title">${d.Titulo || d.Descricao?.substring(0, 50) || 'Demanda sem descrição'}</div>
+                            <div class="demanda-meta">
+                                ${d.Responsavel ? '@' + d.Responsavel : ''} • ${d.Grupo || 'Geral'} • ${d.DataCriacao || ''}
+                                ${d.Status === 'concluido' ? '<span style="color: var(--success);">✓</span>' : ''}
+                            </div>
+                        </div>
+                        <div class="demanda-setor">${d.Setor || 'Geral'}</div>
+                    </div>
+                `).join('') : '<div style="text-align: center; padding: 40px; color: var(--text-muted);">Nenhuma demanda encontrada</div>';
+            }
+            
+            // Atualizar tabs
+            document.querySelectorAll('#viewGrupos #demandasList').forEach(t => t.classList.remove('active'));
+        }
+        
+        // Modal nova demanda
+        function showNovaDemandaModal() {
+            const body = document.getElementById('modalBody');
+            const title = document.getElementById('modalTitle');
+            
+            title.textContent = '📋 Nova Demanda';
+            body.innerHTML = `
+                <div class="form-group"><label class="form-label">Título *</label><input type="text" class="form-input" id="demandaTitulo" placeholder="Ex: Resolver NF do ITA"></div>
+                <div class="form-group"><label class="form-label">Descrição</label><textarea class="form-input" id="demandaDescricao" rows="2" placeholder="Detalhes da demanda..."></textarea></div>
+                <div class="form-group"><label class="form-label">Responsável</label><input type="text" class="form-input" id="demandaResponsavel" placeholder="Ex: Augusto"></div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                    <div class="form-group"><label class="form-label">Prioridade</label>
+                        <select class="form-select" id="demandaPrioridade">
+                            <option value="alta">🔴 Alta</option>
+                            <option value="media" selected>🟡 Média</option>
+                            <option value="baixa">🟢 Baixa</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label class="form-label">Setor</label>
+                        <select class="form-select" id="demandaSetor">
+                            <option value="geral">Geral</option>
+                            <option value="lancamentos">Lançamentos</option>
+                            <option value="produtos">Produtos</option>
+                            <option value="financeiro">Financeiro</option>
+                            <option value="eventos">Eventos</option>
+                            <option value="operacional">Operacional</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group"><label class="form-label">Data Prazo</label><input type="date" class="form-input" id="demandaDataPrazo"></div>
+                <button class="form-btn" onclick="salvarNovaDemanda()">Criar Demanda</button>
+            `;
+            
+            document.getElementById('modalOverlay').classList.add('active');
+        }
+        
+        async function salvarNovaDemanda() {
+            const titulo = document.getElementById('demandaTitulo').value;
+            if (!titulo) return showToast('Preencha o título', 'error');
+            
+            const dados = {
+                titulo,
+                descricao: document.getElementById('demandaDescricao').value,
+                responsavel: document.getElementById('demandaResponsavel').value,
+                prioridade: document.getElementById('demandaPrioridade').value,
+                setor: document.getElementById('demandaSetor').value,
+                dataPrazo: document.getElementById('demandaDataPrazo').value,
+                grupo: 'Dashboard'
+            };
+            
+            const sucesso = await criarDemanda(dados);
+            if (sucesso) {
+                closeModal();
+            }
+        }
+        
+        // Detalhe da demanda
+        function showDemandaDetail(id) {
+            const demanda = gruposData.demandas.find(d => d.ID === id);
+            if (!demanda) return;
+            
+            const body = document.getElementById('modalBody');
+            const title = document.getElementById('modalTitle');
+            
+            title.textContent = '📋 Demanda';
+            body.innerHTML = `
+                <div style="margin-bottom: 16px;">
+                    <div style="font-size: 18px; font-weight: 700; margin-bottom: 8px;">${demanda.Titulo || 'Sem título'}</div>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px;">
+                        <span style="padding: 4px 10px; border-radius: 12px; font-size: 11px; background: ${demanda.Prioridade === 'alta' ? '#FEE2E2' : demanda.Prioridade === 'media' ? '#FEF3C7' : '#D1FAE5'}; color: ${demanda.Prioridade === 'alta' ? '#DC2626' : demanda.Prioridade === 'media' ? '#D97706' : '#059669'};">${demanda.Prioridade || 'media'}</span>
+                        <span style="padding: 4px 10px; border-radius: 12px; font-size: 11px; background: var(--bg);">${demanda.Setor || 'geral'}</span>
+                        <span style="padding: 4px 10px; border-radius: 12px; font-size: 11px; background: ${demanda.Status === 'concluido' ? '#D1FAE5' : demanda.Status === 'pendente' ? '#FEF3C7' : '#E0E7FF'}; color: ${demanda.Status === 'concluido' ? '#059669' : demanda.Status === 'pendente' ? '#D97706' : '#4F46E5'};">${demanda.Status || 'pendente'}</span>
+                    </div>
+                    ${demanda.Descricao ? `<p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 12px;">${demanda.Descricao}</p>` : ''}
+                    <div style="font-size: 13px; color: var(--text-muted);">
+                        ${demanda.Responsavel ? `<div>👤 Responsável: <strong>${demanda.Responsavel}</strong></div>` : ''}
+                        ${demanda.DataPrazo ? `<div>📅 Prazo: <strong>${demanda.DataPrazo}</strong></div>` : ''}
+                        <div>📱 Grupo: ${demanda.Grupo || 'N/A'}</div>
+                        <div>🕐 Criado: ${demanda.DataCriacao || 'N/A'}</div>
+                        <div>🤖 Por: ${demanda.CriadoPor || 'N/A'}</div>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                    ${demanda.Status !== 'concluido' ? `<button class="form-btn" style="flex: 1; background: var(--success);" onclick="marcarConcluida('${id}')">✓ Concluir</button>` : ''}
+                    ${demanda.Status === 'concluido' ? `<button class="form-btn" style="flex: 1; background: var(--warning);" onclick="reabrirDemanda('${id}')">↩ Reabrir</button>` : ''}
+                    <button class="form-btn" style="flex: 1; background: var(--bg); color: var(--text);" onclick="closeModal()">Fechar</button>
+                </div>
+            `;
+            
+            document.getElementById('modalOverlay').classList.add('active');
+        }
+        
+        async function marcarConcluida(id) {
+            await atualizarStatusDemanda(id, 'concluido');
+            closeModal();
+        }
+        
+        async function reabrirDemanda(id) {
+            await atualizarStatusDemanda(id, 'pendente');
+            closeModal();
+        }
+        
         // ===== FAB =====
         function toggleFab() {
             document.getElementById('fab').classList.toggle('open');
@@ -3025,6 +4018,13 @@ Gratidão, criador e criação
         
         // ===== MODALS =====
         function openModal(type) {
+            // Verificar permissões
+            if (!isAdmin() && ['event', 'idea'].includes(type)) {
+                showToast('❌ Apenas administradores podem criar ' + (type === 'event' ? 'eventos' : 'ideias'));
+                toggleFab();
+                return;
+            }
+            
             toggleFab();
             const body = document.getElementById('modalBody');
             const title = document.getElementById('modalTitle');
